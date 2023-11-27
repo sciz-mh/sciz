@@ -43,9 +43,12 @@ class unaccent(ReturnTypeFromArgs):
 class SqlHelper:
 
     # Constructor
-    def __init__(self):
+    def __init__(self, applicationName='scizpy'):
+        print('load conf SqlHelper')
         self.load_conf()
-        self.connect()
+        print('connect SqlHelper')
+        self.connect(applicationName)
+        print('connected SqlHelper')
 
     # Configuration loader
     def load_conf(self):
@@ -61,9 +64,9 @@ class SqlHelper:
         sg.db.engine.execute('CREATE EXTENSION IF NOT EXISTS unaccent;')
 
     # Connect to the DB (create it if missing)
-    def connect(self):
+    def connect(self, applicationName='scizpy'):
         db_url = 'postgresql+psycopg2://%s:%s@%s:%s/%s' % (self.db_user, self.db_pass, self.db_host, self.db_port, self.db_name)
-        self.engine = create_engine(db_url, encoding=sg.DEFAULT_CHARSET, client_encoding=sg.DEFAULT_CHARSET, pool_size=10, max_overflow=5, executemany_mode='batch')
+        self.engine = create_engine(db_url, encoding=sg.DEFAULT_CHARSET, client_encoding=sg.DEFAULT_CHARSET, pool_size=10, max_overflow=5, executemany_mode='batch', connect_args={"application_name":applicationName})
         if self.db_name is not None and not database_exists(self.engine.url):
             create_database(self.engine.url)
         # Create the session for main querying
@@ -89,21 +92,30 @@ class SqlHelper:
     def upsert(self, obj, given_session=None, propagate=True):
         #sg.logger.debug('Upserting %s...' % obj)
         if given_session is None:
+            #sg.logger.info('avant new session')
             session = self.new_session()
+            #sg.logger.info('avant merge')
             obj = session.merge(obj)
+            #sg.logger.info('avant commit')
             session.commit()
             session.close()
+            if propagate:
+                #sg.logger.info('avant reconciliate')
+                self.reconciliate(obj)
         else:
+            #sg.logger.info('avant given merge')
             obj = given_session.merge(obj)
-        if propagate:
-            self.reconciliate(obj)
+            if propagate:
+                #sg.logger.info('avant given reconciliate')
+                self.reconciliate(obj, given_session)
+        #sg.logger.info('fin db')
         return obj
 
     # Upsert any Private
-    def reconciliate(self, obj):
+    def reconciliate(self, obj, given_session=None):
         if any(isinstance(obj, c) for c  in [TrollPrivate, MobPrivate, ChampiPrivate, TresorPrivate]):
             #sg.logger.debug('Reconciliating %s...' % obj)
-            obj.reconciliate()
+            obj.reconciliate(given_session)
         return obj
 
     # Delete any object

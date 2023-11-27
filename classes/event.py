@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-#coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # IMPORTS
 from classes.being_troll import Troll
@@ -42,9 +42,6 @@ class Event(sg.sqlalchemybase):
     # Associations
     owner = relationship('Troll', primaryjoin='Event.owner_id == Troll.id', viewonly=True)
     #owner_private_troll = relationship('TrollPrivate', primaryjoin='and_(Event.owner_id == TrollPrivate.troll_id, Event.owner_id = TrollPrivate.viewer_id)')
-
-    # Index
-    #FIXME CREATE INDEX event_owner_time ON event USING btree (owner_id, time);
 
     # SQL Table Mapping
     __tablename__ = 'event'

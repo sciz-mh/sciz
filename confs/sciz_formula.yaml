@@ -281,7 +281,7 @@ Rafale Psychique:
     Base: 'base_deg'
     Bonus: 'bonus_deg_mag'
   Régénération:
-    Texte: 'Malus REG -{sg.str_min_max(_min, _max)} {sg.str_phy_mag(bonus, None)}'
+    Texte: 'REG -{sg.str_min_max(_min, _max)} {sg.str_phy_mag(bonus, None)}'
     Base: 'base_deg'
     Bonus: ''
 
@@ -301,9 +301,10 @@ Siphon des âmes:
     Base: 'base_reg'
     Bonus: 'bonus_reg_mag'
   Nécrose:
-    Texte: 'Malus ATT -{sg.str_min_max(_min, _max)} {sg.str_phy_mag(bonus, None)}'
+    Texte: 'ATT -{sg.str_min_max(_min, _max)} {sg.str_phy_mag(bonus, None)}'
     Base: 'base_reg'
     Bonus: ''
+
 
 Télékinésie:
   Portée Horizontale:

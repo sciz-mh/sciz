@@ -9,6 +9,7 @@ from classes.event_tresor import tresorEvent
 from classes.event_battle import battleEvent
 from classes.user_partage import Partage
 from classes.coterie_hook import Hook
+from operator import itemgetter
 from sqlalchemy import event, inspect, Column, Integer, Boolean, String, JSON, desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm.exc import NoResultFound
@@ -164,8 +165,8 @@ class Coterie(sg.sqlalchemybase):
         partage = Partage(coterie_id=coterie.id, user_id=user_id, admin=True, start=datetime.datetime.now())
         return sg.db.upsert(partage)
 
-    # Get the events
-    def get_events(self, limit, offset, last_time, revert=False):
+    # Get the events, version with a SQL "IN" which makes it very very slow
+    def get_events_old(self, limit, offset, last_time, revert=False):
         # Build the list of active users
         users_id = self.members_list_sharing(None, None, True)
         # Find the events
@@ -203,3 +204,101 @@ class Coterie(sg.sqlalchemybase):
             obj = {'event': e, 'repr': sg.no.stringify(event), 'icon': event.icon()}
             res.append(obj)
         return res
+
+    # Get the events, version Python "UNION" because Postgresql is too bad
+    def get_events(self, limit, offset, last_time, revert=False):
+        # Build the list of active users
+        users_id = self.members_list_sharing(None, None, True)
+        # Find the events
+        events_id_time = []
+        #print('**** ' + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        for user_id in users_id:
+            event = sg.db.session.query(Event)
+            if not last_time:
+                event = event.filter(Event.owner_id == user_id)
+            elif not revert:
+                event = event.filter(Event.owner_id == user_id, Event.time > datetime.datetime.fromtimestamp(last_time / 1000.0))
+            else:
+                event = event.filter(Event.owner_id == user_id, Event.time <= datetime.datetime.fromtimestamp(last_time / 1000.0))
+            eventsThis = event.order_by(desc(Event.time), desc(Event.id)).offset(0).limit(offset+limit).all()
+            for event in eventsThis:
+                # exclude events without date/time
+                if event.time:
+                    events_id_time.append([event.id, event.time])
+            #print(event.statement)
+        #print('**** ' + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        if not events_id_time:
+            return []
+        #print(events_id_time)
+        events_id_time = sorted(events_id_time, key=itemgetter(1, 0), reverse=not revert)
+        events_id = []
+        last_id = None
+        for event_id_time in events_id_time:
+            if last_id != event_id_time[0]:
+                 last_id != event_id_time[0]
+                 events_id.append(event_id_time[0])
+        #print(events)
+        events = sg.db.session.query(Event)
+        events = events.filter(Event.id.in_(events_id[offset:offset+limit]))
+        events = events.order_by(desc(Event.time), desc(Event.id))
+        events = events.offset(offset).limit(limit)
+        events = events.all()
+        #print('**** ' + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        # Stringify the events
+        res = []
+        for event in events:
+            e = sg.row2dictfull(event)
+            if isinstance(event, cdmEvent):
+                e['mob_blason_uri'] = event.mob.blason_uri
+                e['mob_link'] = event.mob.link
+            if isinstance(event, aaEvent):
+                e['troll_blason_uri'] = event.troll.blason_uri
+                e['troll_link'] = event.troll.link
+            if isinstance(event, tresorEvent):
+                e['tresor_nom'] = event.str_nom_complet
+                e['tresor_link'] = event.tresor.link
+            if isinstance(event, battleEvent):
+                e['att_blason_uri'] = event.att_being.blason_uri if event.att_being is not None else None
+                e['def_blason_uri'] = event.def_being.blason_uri if event.def_being is not None else None
+                e['autre_blason_uri'] = event.autre_being.blason_uri if event.autre_being is not None else None
+                e['att_link'] = event.att_being.link if event.att_being is not None else None
+                e['def_link'] = event.def_being.link if event.def_being is not None else None
+                e['autre_link'] = event.autre_being.link if event.autre_being is not None else None
+                e['subtype'] = event.subtype
+                e['arm'] = event.arm
+            e['owner_blason_uri'] = event.owner.blason_uri
+            e['owner_link'] = event.owner.link
+            obj = {'event': e, 'repr': sg.no.stringify(event), 'icon': event.icon()}
+            res.append(obj)
+        return res
+
+    # Get the events, version with union to address performance issue
+    def get_events_union_sql(self, limit, offset, last_time, revert=False):
+        # Build the list of active users
+        users_id = self.members_list_sharing(None, None, True)
+        # Find the events
+        eventsReq = []
+        for user_id in users_id:
+            event = sg.db.session.query(Event)
+            if not last_time:
+                event = event.filter(Event.owner_id == user_id)
+            elif not revert:
+                event = event.filter(Event.owner_id == user_id, Event.time > datetime.datetime.fromtimestamp(last_time / 1000.0))
+            else:
+                event = event.filter(Event.owner_id == user_id, Event.time <= datetime.datetime.fromtimestamp(last_time / 1000.0))
+            #print(event.statement)
+            eventsReq.append(event)
+        if not eventsReq:
+            return []
+        print(eventsReq)
+        events = eventsReq[0]
+        other_events = eventsReq[1:]
+        print(other_events)
+        if other_events:
+            events = events.union(*other_events)
+        events = events.order_by(desc(Event.time), desc(Event.id)).offset(offset).limit(limit)
+        print(events.statement)
+        print('**** ' + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        events = events.all()
+        print(events)
+        print('**** ' + datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))

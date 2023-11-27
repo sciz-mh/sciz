@@ -1,6 +1,6 @@
 ![SCIZ LOGO](web/public/src/assets/images/logo.png)
 
-EDIT 09/2023 : le support de SCIZ est officiellement arrêté pour une durée indéfinie.
+[![Chat on Miaou](https://miaou.dystroy.org/static/shields/room-fr.svg?v=1)](https://miaou.dystroy.org/2603?SCIZ)
 
 # Système de Chauve-souris Interdimensionnel pour Zhumains
 

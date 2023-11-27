@@ -154,6 +154,7 @@ def hook_jwt_check(view_function):
 # AUTHENTIFICATION
 @webapp.route('/api/login')
 def login():
+    sg.logger.info("HERE")
     redirect_uri = url_for('authorize', _external=True)
     return oauth.mh.authorize_redirect(redirect_uri)
 
@@ -164,6 +165,7 @@ def authorize():
     except OAuthError as o:
         sg.logger.exception(o)
         return redirect('/?error=1')
+    print("test")
     if token is None:
         return redirect('/?error=1')
     userinfo = oauth.mh.userinfo()

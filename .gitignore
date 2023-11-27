@@ -196,3 +196,7 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# config
+sciz_discord.yaml
+sciz_main.yaml

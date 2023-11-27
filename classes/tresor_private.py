@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-#coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # IMPORTS
 from classes.tresor_meta import MetaTresor
@@ -70,9 +70,6 @@ class TresorPrivate(sg.sqlalchemybase):
     viewer = relationship('Troll', back_populates='viewed_tresor_privates', primaryjoin='TresorPrivate.viewer_id == Troll.id', viewonly=True)
     owner = relationship('Troll', back_populates='owned_tresor_privates', primaryjoin='TresorPrivate.owner_id == Troll.id and TresorPrivate.viewer_id == Troll.id')
 
-    # Index
-    #FIXME CREATE INDEX tresor_private_id_viewer ON tresor_private USING btree (viewer_id, tresor_id);
-
     # SQL Table Mapping
     __tablename__ = 'tresor_private'
     __table_args__ = (PrimaryKeyConstraint('tresor_id', 'viewer_id'), )
@@ -91,7 +88,7 @@ class TresorPrivate(sg.sqlalchemybase):
     def nom_complet(self):
         return '%s (%d)' % (self.nom, self.tresor_id)
 
-    def reconciliate(self):
+    def reconciliate(self, given_session=None):
         from classes.user import User
         user = sg.db.session.query(User).get(self.viewer_id)
         if user is not None:
@@ -104,7 +101,7 @@ class TresorPrivate(sg.sqlalchemybase):
                                                        last_reconciliation_at=now,
                                                        last_reconciliation_by=self.viewer_id)
                         sg.copy_properties(self, tresor_private, ['pos_x', 'pos_y', 'pos_n'], False)
-                        sg.db.upsert(tresor_private, propagate=False)
+                        sg.db.upsert(tresor_private, given_session, False)
                 # Sharing Event
                 if my_partage.sharingEvents:
                     for partage in my_partage.coterie.partages_actifs:
@@ -115,7 +112,7 @@ class TresorPrivate(sg.sqlalchemybase):
                                                                   'mithril', 'effet', 'pos_x', 'pos_y', 'pos_n',
                                                                   'last_seen_at', 'last_event_at'],
                                            False)
-                        sg.db.upsert(tresor_private, propagate=False)
+                        sg.db.upsert(tresor_private, given_session, False)
 
 
 # SQLALCHEMY LISTENERS (same listener types executed in order)

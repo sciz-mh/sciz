@@ -1,0 +1,9 @@
+### Setup configuration for SCIZ discord bot ###
+discord:
+  token: 'put the token here'
+  prefix: '!'
+
+redis:
+  host: 'localhost'
+  port: 666
+  db: 0

@@ -63,6 +63,7 @@ class MailWalker:
             parsed_mails_with_attrs = [(n, s, b, f, h, self.re_time.search(b) if b else None, self.re_vie.search(b) if b else None) for (n, (s, b, f, h)) in parsed_mails]
             parsed_mails_with_attrs = [(n, s, b, f, h, datetime.datetime.strptime(t.groupdict()['time'], '%d/%m/%Y %H:%M:%S') if t else datetime.datetime.now(), int(v.groupdict()['vie']) if v else 0) for (n, s, b, f, h, t, v) in parsed_mails_with_attrs]
             sorted_mails = sorted(parsed_mails_with_attrs, key=itemgetter(5, 6))
+            sg.logger.info('%s mails parsed for user %s !' % (len(sorted_mails), sg.user.mail,))
             # Finally walk over the mails
             for file_path, subject, body, froms, headers, time, vie in sorted_mails:
                 try:
@@ -77,7 +78,9 @@ class MailWalker:
                             if obj.owner_id is None or not sg.user.is_same_maisonnee(obj.owner_id):
                                 sg.logger.error("Discarded a forgery for troll '%s', sent to user '%d'" % (obj.owner_id, sg.user.id,))
                             else:
+                                sg.logger.info('avant db ' + obj.__class__.__name__)
                                 obj = sg.db.upsert(obj)
+                                sg.logger.info('apres db')
                                 # DEBUG ONLY
                                 #session, obj = sg.db.rebind(obj)
                                 #print(sg.no.stringify(obj), os.linesep)

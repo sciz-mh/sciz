@@ -10,7 +10,13 @@ from modules.sql_helper import SqlHelper
 from modules.notifier import Notifier
 from modules.mh_caller import MhCaller
 from classes.user import User
+from classes.lieu_portail import Portail
+from classes.lieu_piege import Piege
+from classes.coterie import Coterie
 from logging.handlers import RotatingFileHandler
+from modules.mail_parser import MailParser
+from modules.mail_helper import MailHelper
+import email, mailbox, datetime
 import sys, os, argparse, codecs, logging, traceback, yaml, re
 import modules.globals as sg
 
@@ -61,18 +67,25 @@ class SCIZ:
         sg.logger = logging.getLogger('sciz')
 
         # Set up the database connection and store it globally
-        sg.db = SqlHelper()
+        try:
+            sg.db = SqlHelper('sciz' + sys.argv[1])
+        except Exception as e:
+            sg.db = SqlHelper('scizweb')
 
         # Set up the admin helper and store it globally
+        print('init Admin')
         sg.ah = AdminHelper()
 
         # Set up the requester and store it globally
+        print('init Requester')
         sg.req = Requester()
 
         # Set up the notifier and store it globally
+        print('init Notifier')
         sg.no = Notifier()
 
         # Set up the mh caller and store it globally
+        print('init MhCaller')
         sg.mc = MhCaller()
 
     # Test
@@ -90,12 +103,42 @@ class SCIZ:
         ### Create a test user
         #user = User(id=1, pwd_hash='test', mh_api_key='TEST')
         #sg.db.upsert(user)
+	###
+        #portals = sg.db.session.query(Portail).all()
+        #for p in portals:
+        #    p.type = 'Portail'
+        #    sg.db.upsert(p)
+        ###
+        #hook = sg.db.session.query(Hook).get(4049)
+        #hook.trigger()
+        
+        ### time to get coterie 10 last events
+        #coterie = sg.db.session.query(Coterie).get(705)
+        #print(coterie.__class__.__name__)
+        #l = coterie.get_events(50, 0, 0, False)
+        #for e in l:
+        #    print(e['event']['owner_id'], e['event']['time'])
+            
+        ### reproduce/fix issue when there is an empty file in maildir
+        print('test mailbox')
+        mbox = mailbox.Maildir('/sciz/logs/badmailbox', create=True)
+        mails = mbox.items()
+        print(mails)
+        for mail in mails:
+            if mail[1].get('Date') is None:
+                print('bad ' + mail[0])
+                # not safe to remove while iterating !!!!!!
+                mails.remove(mail)
+        sorted_mbox = sorted(mails, key=lambda x: email.utils.parsedate(x[1].get('Date')))
+
+        print('end of test')
         pass
 
 
 # MAIN
 if __name__ == '__main__':
 
+    print('process args')
     # Command line arguments handling
     parser = argparse.ArgumentParser(
             description='Système de Chauve-souris Interdimensionnel pour Zhumains',
@@ -154,7 +197,9 @@ if __name__ == '__main__':
             sg.ah.init()
         elif args.walker is not None:
             sg.logger.info('Starting the walker...')
+            print('Creating the walker')
             sg.logger = logging.getLogger('walker')
+            print('Starting the walker')
             sg.ah.walk()
         elif args.updater is not None:
             sg.logger.info('Starting the updater...')
@@ -179,7 +224,6 @@ if __name__ == '__main__':
         print('The bats went sick. Check the log file?', file=sys.stderr)
         if sg.logger is not None:
             sg.logger.exception(e)
-        else:
-            traceback.print_exc()
+        traceback.print_exc()
         sys.exit(1)
     sg.logger.info('Nothing else to do. Bats went to sleep.')

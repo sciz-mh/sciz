@@ -13,8 +13,8 @@ mail:
 # Outgoing mails configuration
 smtp:
   from: 'SCIZ <do-not-reply@sciz.fr>'
-  pwd: 'smtp_passwd'
-  host: '127.0.0.1'
+  pwd: 'passwd'
+  host: 'localhost'
   tls: true
   port: 465
 
@@ -27,24 +27,26 @@ log:
 # Web server configuration (internal only)
 web:
   port: 8080
+  tls: true
   domain: 'localhost'
-  secret: 'ThisShouldBeAVeryLongAndRandomSecret1234'
+  tls: true
+  secret: 'a long secret'
 
 # Database configuration
 # (user role must be superuser, necessary for the create extension unaccent and of course have rights to create database)
 db:
-  host: '127.0.0.1'
+  host: 'localhost'
   port: 5432
   name: 'sciz'
   user: 'sciz'
-  passwd: 'db_passwd'
+  passwd: 'db pass'
 
 # Instance configuration (values in minutes)
 instance:
   regex_filename: 'sciz_regex.yaml' # Must be directory based on this configuration file
   default_format_filename: 'sciz_format.yaml' # Must be directory based on this configuration file
   formula_filename: 'sciz_formula.yaml' # Must be directory based on this configuration file
-  ftp_refresh_rate: 1440 # One day in minutes
+  ftp_refresh_rate: 1440
   mail_max_retention: 1440 # One day in minutes
 
 # MountyHall related configuration
@@ -82,6 +84,7 @@ sciz_help: 'http://mountypedia.mountyhall.com/Outils/SCIZ'
 hooks:
   Miaou:
     URL: 'https://miaou.dystroy.org/sciz-webhook'
-    #URL: 'http://miaou.dev/sciz-webhook'
   Discord:
+    URL: ''
+  Mountyzilla:
     URL: ''

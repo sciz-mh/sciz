@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-#coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # IMPORTS
 from modules.mail_walker import MailWalker
@@ -74,6 +74,7 @@ class AdminHelper:
                         sg.user = sg.db.session.query(User).get(user_id)
                         if sg.user is not None:
                             sg.wk.walk()
+                            sg.logger.info('Done mails for user %s !' % (user_id,))
                         else:
                             sg.logger.error("Mail received for %s, but user does not exist inside the databse..." % (user_id,))
                     except Exception as e:
@@ -84,10 +85,12 @@ class AdminHelper:
         locked = False
         mfh, obs = MailFileHandler(self.mailDirPath), Observer()
         obs.schedule(mfh, self.mailDirPath, recursive=True)
+        print('Start file observer')
         obs.start()
+        print('File observer started')
         try:
             while True:
-                time.sleep(3)
+                time.sleep(1)
         except KeyboardInterrupt:
             obs.stop()
         obs.join()

@@ -1,32 +1,46 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+#coding: utf-8
 
 # IMPORTS
-import sys, asyncio, aiohttp, json, redis, re
-from discord import Game
+import sys, asyncio, aiohttp, json, redis, re, yaml, codecs
+from discord import Game, Intents
+from discord.ext.tasks import loop
 from discord.ext.commands import Bot
 
 # CONSTS
 DEFAULT_CHARSET = 'utf-8'
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
-REDIS_DB = 0
-DISCORD_BOT_TOKEN = ''
-DISCORD_PREFIX = '!'
 SCIZ_URL_BASE = 'https://www.sciz.fr/api/hook'
 #SCIZ_URL_BASE = 'http://127.0.0.1:8080/api/hook'
 SCIZ_URL_EVENTS = SCIZ_URL_BASE + '/events'
 SCIZ_URL_REQUEST = SCIZ_URL_BASE + '/request'
 SCIZ_INTERVAL = 5
+CONF_FILE = 'sciz_discord.yaml'
+CONF_DISCORD_SECTION = 'discord'
+CONF_DISCORD_TOKEN = 'token'
+CONF_DISCORD_PREFIX = 'prefix'
+CONF_REDIS_SECTION = 'redis'
+CONF_REDIS_HOST = 'host'
+CONF_REDIS_PORT = 'port'
+CONF_REDIS_DB = 'db'
 
 # MAIN
 if __name__ == '__main__':
+    # load config
+    with codecs.open(CONF_FILE, 'r', DEFAULT_CHARSET) as fp:
+        conf = yaml.safe_load(fp)
+    #print(conf)
+    conf_discord = conf[CONF_DISCORD_SECTION]
+    conf_redis = conf[CONF_REDIS_SECTION]
+    #print(conf_discord)
+    #print(conf_redis)
+    #exit()
 
     # Connect to REDIS
-    r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+    r = redis.Redis(host=conf_redis[CONF_REDIS_HOST], port=conf_redis[CONF_REDIS_PORT], db=conf_redis[CONF_REDIS_DB])
 
     # Create the bot
-    bot = Bot(command_prefix=DISCORD_PREFIX)
+    #bot = Bot(command_prefix=DISCORD_PREFIX, intents=Intents.all())
+    bot = Bot(command_prefix=conf_discord[CONF_DISCORD_PREFIX])
 
     # Define bot events
     @bot.event
@@ -37,11 +51,11 @@ if __name__ == '__main__':
     # Define bot commands
     @bot.command(name='sciz', pass_context=True)
     async def _sciz_request(ctx, *args):
-        # Get useful things
+	# Get useful things
         args = ' '.join(args).strip()
         channel_id = ctx.message.channel.id
         jwt = r.get(channel_id)
-        # Handle ping
+	# Handle ping
         if args == 'ping':
             await ctx.send('pong')
             return
@@ -114,7 +128,8 @@ if __name__ == '__main__':
     # Start the bot
     task = bot.loop.create_task(_sciz_fetch_events(SCIZ_URL_EVENTS, SCIZ_INTERVAL))
     try:
-        bot.run(DISCORD_BOT_TOKEN)
+        bot.run(conf_discord[CONF_DISCORD_TOKEN])
     except Exception as e:
         print(e)
         task.cancel()
+

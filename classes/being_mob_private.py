@@ -166,7 +166,7 @@ class MobPrivate(sg.sqlalchemybase):
             return self.mob.nom_complet
         return None
 
-    def reconciliate(self):
+    def reconciliate(self, given_session=None):
         from classes.user import User
         user = sg.db.session.query(User).get(self.viewer_id)
         if user is not None:
@@ -178,7 +178,7 @@ class MobPrivate(sg.sqlalchemybase):
                         mob_private = MobPrivate(mob_id=self.mob_id, viewer_id=partage.user_id,
                                                  last_reconciliation_at=now, last_reconciliation_by=self.viewer_id)
                         sg.copy_properties(self, mob_private, ['pos_x', 'pos_y', 'pos_n'], False)
-                        sg.db.upsert(mob_private, propagate=False)
+                        sg.db.upsert(mob_private, given_session, False)
                 # Sharing Event
                 if my_partage.sharingEvents:
                     for partage in my_partage.coterie.partages_actifs:
@@ -200,4 +200,4 @@ class MobPrivate(sg.sqlalchemybase):
                             getattr(mob_private, attr_min), getattr(self, attr_min))))
                             setattr(mob_private, attr_max, sg.do_unless_none(min, (
                             getattr(mob_private, attr_max), getattr(self, attr_max))))
-                        sg.db.upsert(mob_private, propagate=False)
+                        sg.db.upsert(mob_private, given_session, False)

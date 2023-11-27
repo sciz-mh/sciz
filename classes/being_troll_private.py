@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-#coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # IMPORTS
 from sqlalchemy import event, Column, Integer, String, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint
@@ -194,10 +194,10 @@ class TrollPrivate(sg.sqlalchemybase):
 
     @hybrid_property
     def pdv_max(self):
-        if self.last_sp4_update_at is not None:
-            # Here _min attrs and _max attrs are supposed to be equal
-            return self.base_pdv_min + self.bonus_pdv_phy + self.bonus_pdv_mag
-        return None
+        if any(e is None for e in [self.last_sp4_update_at, self.base_pdv_min, self.bonus_pdv_phy, self.bonus_pdv_mag]):
+            return None
+        # Here _min attrs and _max attrs are supposed to be equal
+        return self.base_pdv_min + self.bonus_pdv_phy + self.bonus_pdv_mag
 
     @hybrid_property
     def malus_blessure(self):
@@ -322,7 +322,7 @@ class TrollPrivate(sg.sqlalchemybase):
             return self.troll.nom_complet
         return None
 
-    def reconciliate(self):
+    def reconciliate(self, given_session=None):
         from classes.user import User
         user = sg.db.session.query(User).get(self.viewer_id)
         if user is not None:
@@ -334,7 +334,7 @@ class TrollPrivate(sg.sqlalchemybase):
                         troll_private = TrollPrivate(troll_id=self.troll_id, viewer_id=partage.user_id,
                                                      last_reconciliation_at=now, last_reconciliation_by=self.viewer_id)
                         sg.copy_properties(self, troll_private, ['pos_x', 'pos_y', 'pos_n'], False)
-                        sg.db.upsert(troll_private, propagate=False)
+                        sg.db.upsert(troll_private, given_session, False)
                 # Sharing Event or Profile
                 if (my_partage.sharingEvents and self.viewer_id != user.id) or (my_partage.sharingProfile and self.viewer_id == user.id):
                     for partage in my_partage.coterie.partages_actifs:
@@ -359,4 +359,4 @@ class TrollPrivate(sg.sqlalchemybase):
                             setattr(troll_private, attr_max, sg.do_unless_none(min, (getattr(troll_private, attr_max), getattr(self, attr_max))))
                             if my_partage.sharingProfile:
                                 sg.copy_properties(self, troll_private, ['bonus_' + attr + '_phy', 'bonus_' + attr + '_mag'], False)
-                        sg.db.upsert(troll_private, propagate=False)
+                        sg.db.upsert(troll_private, given_session, False)

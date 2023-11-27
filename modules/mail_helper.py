@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-#coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # IMPORTS
 import smtplib
@@ -34,22 +34,22 @@ class MailHelper:
         self.smtp_pwd = sg.conf[sg.CONF_SMTP_SECTION][sg.CONF_SMTP_PWD]
    
     def build_gmail(self):
-        if not hasattr(self, 'sender') or not hasattr(self, 'code'):
-            sg.logger.warning('Detected GMAIL but failed to parse sender or code...')
+        if not hasattr(self, 'sender') or not hasattr(self, 'link'):
+            sg.logger.warning('Detected GMAIL but failed to parse sender or link...')
             return
         sender = self.sender
-        code = self.code
+        link = self.link
         # Build the answer
-        subject = '[SCIZ] Code de confirmation de transfert GMAIL'
-        text = 'Votre code de transfert GMAIL pour %s est : %s' % (sg.user.mail, code)
+        subject = '[SCIZ] Lien de confirmation de transfert GMAIL'
+        text = 'Votre lien de transfert GMAIL pour %s est : %s' % (sg.user.mail, link)
         html = '''
         <html>
             <head></head>
             <body>
-                <p>Votre code de transfert pour %s est : %s</p>
+                <p>Votre lien de transfert pour %s est : %s</p>
             </body>
         </html>
-        ''' % (sg.user.mail, code)
+        ''' % (sg.user.mail, link)
         # Send the mail
         self.send_mail(sender, subject, text, html)
 

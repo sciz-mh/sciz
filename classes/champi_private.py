@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-#coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # IMPORTS
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, PrimaryKeyConstraint
@@ -64,7 +64,7 @@ class ChampiPrivate(sg.sqlalchemybase):
     def tooltip(self):
         return '(%s)' % self.champi_id
 
-    def reconciliate(self):
+    def reconciliate(self, given_session=None):
         from classes.user import User
         user = sg.db.session.query(User).get(self.viewer_id)
         if user is not None:
@@ -76,7 +76,7 @@ class ChampiPrivate(sg.sqlalchemybase):
                         champi_private = ChampiPrivate(champi_id=self.champi_id, viewer_id=partage.user_id,
                                                        last_reconciliation_at=now, last_reconciliation_by=self.viewer_id)
                         sg.copy_properties(self, champi_private, ['pos_x', 'pos_y', 'pos_n'], False)
-                        sg.db.upsert(champi_private, propagate=False)
+                        sg.db.upsert(champi_private, given_session, False)
                 # Sharing Event
                 if my_partage.sharingEvents:
                     for partage in my_partage.coterie.partages_actifs:
@@ -85,4 +85,4 @@ class ChampiPrivate(sg.sqlalchemybase):
                         sg.copy_properties(self, champi_private, ['owner_id', 'picker_id', 'fraicheur', 'nom', 'qualite',
                                                                     'pos_x', 'pos_y', 'pos_n', 'last_seen_at',
                                                                   'last_event_at'], False)
-                        sg.db.upsert(champi_private, propagate=False)
+                        sg.db.upsert(champi_private, given_session, False)
