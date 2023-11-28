@@ -1,0 +1,391 @@
+@charset "utf-8";
+
+/*
+ * Sur un design original de Moufette (108795)
+ */
+
+/* 
+ * GLOBALS
+ */
+* {
+	margin: 0;
+	padding: 0;
+}
+body {
+	font-family: "Trebuchet MS", "Times New Roman", Times, serif;
+	font-size: 0.8em;
+	background-color: #F4F4F4;
+	background-image:url('https://www.sciz.fr/static/104126/background-header.jpg');
+	background-position:center top;
+	background-repeat:no-repeat;
+	width: 100%;
+}
+input, select, option {
+	font-family: "Trebuchet MS", "Times New Roman", Times, serif;
+	font-weight: bold;
+	background-color: #fff;
+}
+option {
+	padding-left: 3px;
+}
+input {
+	font-size: 0.9em;
+}
+/* -- Titres -- */
+h1, #PJView_Events h1 {
+	color: #fff;
+	text-align: center;
+	padding: 10px;
+	margin: 50px 0px 15px;
+	font-size: 60px;
+	/*font-family: 'Courgette', cursive;*/
+	font-weight: bold;
+}
+h2 {
+	text-align: center;
+	font-size: 130%;
+	margin: 10px;
+	display:none;
+}
+/* -- Liens -- */
+a, a:link, a:active, a:visited {
+	color: #5fafaf;
+	text-decoration: none;
+	font-weight: bold;
+}
+a:hover { color: #DC938F;}
+#styleSwitcher {
+	text-align: center;
+	margin: 10px;
+}
+
+/* =========== MENU TOP =========== */
+ul#pjLinks {
+	background: #fff;
+	padding: 14px 30px;
+	width:400px;
+	margin:auto;
+	margin-top:50px;
+	border-radius:10px;
+	text-align:center;
+	font-size: 0.9em;
+}
+ul#pjLinks li {display: inline;padding: 0px 10px 0px 12px;}
+li#pjLinkProfil, li#pjLinkEvents, li#pjLinkTrolligion, li#pjLinkClassement, li#pjLinkChasse {border-right: 1px solid #8E8E8E;}
+ul#pjLinks a, ul#pjLinks a:visited {color: #8E8E8E;}
+ul#pjLinks a:hover, ul#pjLinks a:active {color:#000;}
+
+/* =========== RECHERCHE TROLL =========== */
+form {
+	clear:both;
+	background: #fff;
+	padding: 2px 30px 8px;
+	width:200px;
+	margin:auto;
+	border-bottom-left-radius:10px;
+	border-bottom-right-radius:10px;
+	text-align:center;
+}
+form label { font-weight: bold; color: #8E8E8E;}
+form div { display: inline;}
+form div.submit input {
+	background-color: #fff;
+	border:1px solid #ddd;
+	padding:3px;
+	color: #8E8E8E;
+}
+input#troll_id.ui-autocomplete-input { border:none;background-color:white;width:50px;color: #8E8E8E; }
+input#ai_IDPJ, input#ai_IDPJ_Events { width: 50px; }
+
+/* =========== CARACTERISTIQUES TROLL =========== */
+
+/* images des icones */
+body#PJView dd.numero { background:url(https://www.sciz.fr/static/104126/icons/messages.png) no-repeat center; }
+body#PJView dt.creation { background:url(https://www.sciz.fr/static/104126/icons/creation.png) no-repeat center; }
+body#PJView dt.guilde { background:url(https://www.sciz.fr/static/104126/icons/guilde.png) no-repeat center; }
+body#PJView dt.palmares { background:url(https://www.sciz.fr/static/104126/icons/chasse.png) no-repeat center; }
+body#PJView dt.maladie { background:url(https://www.sciz.fr/static/104126/icons/race.png) no-repeat center; }
+body#PJView dt.faitsDeChasse { display:none; }
+body#PJView dt.maison { display:none; }
+body#PJView dt.filiations { background:url(https://www.sciz.fr/static/104126/icons/maison.png) no-repeat center; }
+body#PJView dt.meurtres { background:url(https://www.sciz.fr/static/104126/icons/cibles.png) no-repeat center; }
+body#PJView dt.equipement { background:url(https://www.sciz.fr/static/104126/icons/equipement.png) no-repeat center; }
+body#PJView dt.deces { background:url(https://www.sciz.fr/static/104126/icons/morts.png) no-repeat center; }
+body#PJView dt.niveau { background:url(https://www.sciz.fr/static/104126/icons/niveau.png) no-repeat center; }
+body#PJView dt.race { background:url(https://www.sciz.fr/static/104126/icons/lignee.png) no-repeat center; }
+body#PJView dt.mouches { background:url(https://www.sciz.fr/static/104126/icons/mouches.png) no-repeat center; }
+/*body#PJView dt.possessions { background:url(https://www.sciz.fr/static/104126/icons/bag.png) no-repeat center; }*/
+
+/* Infos generales */
+body#PJView dl {
+	position:relative;
+	/*border-bottom: 1px solid #DDD;*/
+	width: 620px; /* 60px by item */
+	margin: 390px auto 0px;
+	clear:both;
+	display:block;
+	padding:0px 0px 20px;
+	min-height: 50px;
+}
+body#PJView dt {
+	float: left;
+	padding: 0px 30px;
+	width: 42px;
+	height: 42px;
+	color: transparent;
+	cursor: pointer;
+}
+body#PJView dd { display: none; }
+body#PJView dd ul { list-style:none; }
+
+/* Au cas par cas */
+body#PJView dt.numero {display:none;}
+body#PJView dd.numero { display:block;float: left;padding: 0px 30px;width: 42px;height: 42px; color: transparent;cursor: pointer; }
+span#envoiMessage a {color:transparent;}
+body#PJView dt.blason { display: none;}
+body#PJView dd.blason { display:block; position: absolute;top:-350px; left:160px;}
+body#PJView dd.blason img { background-color: #FFFFFF; border-radius:300px;} 
+body#PJView dt.maison:hover+dd.maison,
+body#PJView dt.distinction:hover+dd.distinction, 
+body#PJView dt.race:hover+dd.race,
+body#PJView dt.creation:hover+dd.creation, 
+body#PJView dt.niveau:hover+dd.niveau, 
+body#PJView dt.guilde:hover+dd.guilde , 
+body#PJView dt.mouches:hover+dd.mouches,
+body#PJView dt.meurtres:hover+dd.meurtres, 
+body#PJView dt.deces:hover+dd.deces, 
+body#PJView dt.equipement:hover+dd.equipement,
+body#PJView dt.possessions:hover+dd.possessions {
+	display: block;
+	padding: 8px;
+	min-height: 20px;
+	background: white;
+	color: grey;
+	position:absolute;
+	top: 50px;
+	left: 185px;
+	width: 280px;
+	border: 10px solid #ddd;
+	text-align: center;
+}
+body#PJView dt.maladie+dd.maladie, 
+body#PJView dt.maladie:hover+dd.maladie {}
+body#PJView dd.race:before {
+	content: "Fier membre de la race ";
+}
+body#PJView dd.creation:before {
+	content: "Troll né le ";
+}
+body#PJView dd.guilde:before {
+	content: "Guilde ";
+}
+body#PJView dd.niveau:before {
+	content: "Nival ";
+}
+body#PJView dd.meurtres:after {
+	content: " mobs/trolls snipés";
+}
+body#PJView dd.mouches:after {
+	content: " mouches";
+}
+body#PJView dd.deces:after {
+	content: " retours au soleil";
+}
+body#PJView dd.equipement span.magie {
+	font-weight:bold;
+}
+body#PJView dd.possessions:before {
+	content: "Rien dans les poches, tout dans les bras !";
+}
+
+/* =========== DESCRIPTION PERSO =========== */
+#description {width:100%;display:block;clear:both;}
+#disclaimer {text-align: center;display:none;}
+#description center { background:white; clear:both; padding: 30px 60px; overflow:overlay; }
+#description{
+	line-height: 2.2;
+	font-style: normal;}
+#description blockquote {
+	width: 680px;
+	margin: auto;
+	padding: 5px;
+	clear: both;
+}
+#description blockquote > i {
+	width: 45%;
+	display: block;
+	text-align: justify;
+	float: left;
+	padding: 10px 17px 60px;
+}
+#description blockquote > img {
+	margin: 0px 10px 10px 0px; 
+	vertical-align: middle;
+}
+#description ol {
+	list-style: none;
+    text-align: center;
+	background-color: white;
+}
+#description ol > li {
+	display:inline-block;
+	width: 32%;
+	height: 300px;
+}
+#description ol > li:hover > b {
+	display:none;
+}
+#description ol > li > u {
+	display:none;
+}
+#description ol > li:hover > u {
+	display:block;
+}
+#description hr {
+	border-width: 1px;
+	border-color: #ddd;
+	border-style: solid;
+	margin-bottom: 20px;
+}
+
+/* =========== PAGE D'EVENTS =========== */
+div#navigation {
+	margin: 80px auto 0px;
+	width: 200px;
+	display:block;
+	padding: 14px 30px;
+	font-weight: bold;
+	text-align: center;
+	border-top-left-radius:10px;
+	border-top-right-radius:10px;
+	background-color:#fff;
+}
+div#navigation span {
+	padding-left: 15px;
+}
+p#suppressionEvents, .titre3 {
+	display: none;
+}
+table#events, table#foo_chasse {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 720px;
+	margin: 80px auto 20px;
+	background-color:#fff;
+}
+table#events th, table#events td, table#foo_chasse th, table#foo_chasse td {
+	border: 1px solid #ccc;
+	font-size: 90%;
+	padding: 2px;
+}
+table#events td.eventDate {
+	text-align: center;
+}
+table#events td.eventDescription a.mh_trolls_1 {
+	color: #A72269;
+}
+
+/* =========== PAGE CLASSEMENTS =========== */
+body#PJView_Classements dl {
+	position:relative;
+	border-bottom: 1px solid #DDD;
+	width: 680px;
+	margin: auto;
+	margin-top:120px;
+	clear:both;
+	display:block;
+	padding:0px 0px 20px;
+	min-height: 100px;
+}
+body#PJView_Classements dt {
+	float: left;
+	clear: left;
+	width: 300px;
+	font-weight: bold;
+	padding: 3px;
+	min-height: 20px;
+}
+body#PJView_Classements dd {
+	padding: 3px;
+	padding-left: 15px;
+	margin-left: 300px;
+	min-height: 20px;
+}
+
+/* =========== PAGE TROLLIGION =========== */
+body#trolligion {text-align: center; padding-bottom: 40px;}
+body#trolligion table {width:300px;margin:20px auto 40px;}
+body#trolligion table td {padding:10px; text-align:center;}
+body#trolligion h2 {
+    text-align: center;
+    font-size: 130%;
+    display: block;
+	margin: 80px auto 130px;
+    background-color: #fff;
+    padding: 14px 30px;
+    width: 200px;
+    border-radius: 10px;
+	font-family: "Trebuchet MS", "Times New Roman", Times, serif;
+    font-size: 12.5px;
+    font-weight: 400 !important;
+}
+
+/* =========== PAGE MAISONNEE =========== */
+body#maisonnee table {margin:auto;}
+body#maisonnee table td {padding:10px;}
+div.mh_titre3 {
+	margin: 80px auto 100px;
+	background-color: #fff;
+	padding: 14px 30px;
+	width: 200px;
+	border-radius: 10px;
+}
+body#PJView_Classements table {width:300px;margin:20px auto 40px;}
+body#PJView_Classements table td {padding:10px;
+}
+
+/* =========== PAGE MOUCHES =========== */
+table#mouches {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+table#mouches th, table#mouches td {
+	border: 1px solid #000;
+	font-size: 0.8em;
+	padding: 2px;
+}
+table#mouches td {
+	text-align: center;
+}
+
+/* =========== CHANGER D'APPARENCE =========== */
+div#styleSwitcher {
+	margin: 0px;
+	background-color: #333;
+	padding: 30px 0px;
+	width: 100%;
+	display: inline-block;
+}
+div#styleSwitcher a {color: #ddd;}
+
+/* Hide from IE5-mac. Only IE-win sees this. \*/ 
+* html dt {
+	margin-right: -3px;
+}
+* html dt.distinctionsHorsJeu, * html dt.distinctions, * html dt.maladie, * html dt.trolligion {
+	margin-right: 0;
+}
+* html dd {
+	height: 1%;
+	margin-left: 0;
+}
+* html dl#classements dd {
+	height: 1%;
+	margin-left: 0;
+}
+* html dd#rangGuilde {
+	margin-left: 170px;
+}
+/* End hide from IE5/mac */
+
