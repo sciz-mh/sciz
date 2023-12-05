@@ -120,16 +120,37 @@ class SCIZ:
         #    print(e['event']['owner_id'], e['event']['time'])
             
         ### reproduce/fix issue when there is an empty file in maildir
-        print('test mailbox')
-        mbox = mailbox.Maildir('/sciz/logs/badmailbox', create=True)
-        mails = mbox.items()
-        print(mails)
-        for mail in mails:
-            if mail[1].get('Date') is None:
-                print('bad ' + mail[0])
-                # not safe to remove while iterating !!!!!!
-                mails.remove(mail)
-        sorted_mbox = sorted(mails, key=lambda x: email.utils.parsedate(x[1].get('Date')))
+        #print('test mailbox')
+        #mbox = mailbox.Maildir('/sciz/logs/badmailbox', create=True)
+        #mails = mbox.items()
+        #print(mails)
+        #for mail in mails:
+        #    if mail[1].get('Date') is None:
+        #        print('bad ' + mail[0])
+        #        # not safe to remove while iterating !!!!!!
+        #        mails.remove(mail)
+        #sorted_mbox = sorted(mails, key=lambda x: email.utils.parsedate(x[1].get('Date')))
+
+        print('test session using "with"')
+        try:
+            with sg.db.sessionMaker() as session:
+                sql = """ select max_mh_sp_static from public.user where id= %(_id)s """
+                params = {'_id': 91305}
+                r = session.execute(sql % params)
+                l = list(r)
+                print('before', l[0][0])
+                sql = """ update public.user set max_mh_sp_static=5 where id=%(_id)s """
+                session.execute(sql % params)
+                sql = """ select max_mh_sp_static from public.user where id= %(_id)s """
+                r = session.execute(sql % params)
+                l = list(r)
+                print('after', l[0][0])
+                # sql error to test auto rollback
+                sql = """ select max_mh_sp_staticx from public.user where id= %(_id)s """
+                #r = session.execute(sql % params)
+                #session.commit()
+        except Exception as e:
+            print(e)
 
         print('end of test')
         pass
