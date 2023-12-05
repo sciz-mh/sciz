@@ -79,21 +79,16 @@ class MailWalker:
                                     continue
                                 if obj.owner_id is None or not sg.user.is_same_maisonnee(obj.owner_id):
                                     sg.logger.error("Discarded a forgery for troll '%s', sent to user '%d'" % (obj.owner_id, sg.user.id,))
+                                    if archiveType == 'error': archiveType == 'forgery'
                                 else:
                                     sg.logger.info('avant db ' + obj.__class__.__name__)
                                     obj = sg.db.upsert(obj, session)
                                     sg.logger.info('apres db')
-                                    # DEBUG ONLY
-                                    #session, obj = sg.db.rebind(obj)
-                                    #print(sg.no.stringify(obj), os.linesep)
-                                    #session.close()
+                                    archiveType = 'archive'
                             session.commit()
                             sg.logger.info('apres commit')
-                            # Archive the mail
-                            archiveType = 'archive'
+                            if archiveType == 'error': archiveType = 'empty'
                     else:
-                        # Unrecognized or ignored mail, delete it immediatly
-                        #os.remove(file_path)
                         archiveType = 'unrecognized'
                 # If anything goes wrong parsing a mail, it will land here (hopefully)
                 except Exception as e:
