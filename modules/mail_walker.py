@@ -66,36 +66,41 @@ class MailWalker:
             sg.logger.info('%s mails parsed for user %s !' % (len(sorted_mails), sg.user.mail,))
             # Finally walk over the mails
             for file_path, subject, body, froms, headers, time, vie in sorted_mails:
+                archiveType = 'error'
                 try:
                     objs = self.mp.parse(subject, body, froms, headers, sg.user)
                     if objs == 'UNHANDLED':
-                        self.archive(sg.user, file_path, 'unhandled')
+                        archiveType = 'unhandled'
                     elif objs is not None:
                         if not type(objs) is list: objs = [objs]
-                        for obj in objs:
-                            if isinstance(obj, MailHelper):
-                                continue
-                            if obj.owner_id is None or not sg.user.is_same_maisonnee(obj.owner_id):
-                                sg.logger.error("Discarded a forgery for troll '%s', sent to user '%d'" % (obj.owner_id, sg.user.id,))
-                            else:
-                                sg.logger.info('avant db ' + obj.__class__.__name__)
-                                obj = sg.db.upsert(obj)
-                                sg.logger.info('apres db')
-                                # DEBUG ONLY
-                                #session, obj = sg.db.rebind(obj)
-                                #print(sg.no.stringify(obj), os.linesep)
-                                #session.close()
-                        # Archive the mail
-                        self.archive(sg.user, file_path, 'archive')
+                        with sg.db.sessionMaker() as session:
+                            for obj in objs:
+                                if isinstance(obj, MailHelper):
+                                    continue
+                                if obj.owner_id is None or not sg.user.is_same_maisonnee(obj.owner_id):
+                                    sg.logger.error("Discarded a forgery for troll '%s', sent to user '%d'" % (obj.owner_id, sg.user.id,))
+                                else:
+                                    sg.logger.info('avant db ' + obj.__class__.__name__)
+                                    obj = sg.db.upsert(obj, session)
+                                    sg.logger.info('apres db')
+                                    # DEBUG ONLY
+                                    #session, obj = sg.db.rebind(obj)
+                                    #print(sg.no.stringify(obj), os.linesep)
+                                    #session.close()
+                            session.commit()
+                            sg.logger.info('apres commit')
+                            # Archive the mail
+                            archiveType = 'archive'
                     else:
                         # Unrecognized or ignored mail, delete it immediatly
-                        os.remove(file_path)
+                        #os.remove(file_path)
+                        archiveType = 'unrecognized'
                 # If anything goes wrong parsing a mail, it will land here (hopefully)
                 except Exception as e:
                     sg.logger.error('Failed to handle mail \'%s\'' % file_path, exc_info=True)
-                    self.archive(sg.user, file_path, 'error')
                     sg.logger.exception(e)
-                    sg.db.session.rollback()
+                finally:
+                    self.archive(sg.user, file_path, archiveType)
             # Push reverse hook for the whole maisonnee
             # (in case the user is using the mail of another linked user)
             if sg.db.session is not None:
