@@ -79,7 +79,7 @@ class MailWalker:
                                     continue
                                 if obj.owner_id is None or not sg.user.is_same_maisonnee(obj.owner_id):
                                     sg.logger.error("Discarded a forgery for troll '%s', sent to user '%d'" % (obj.owner_id, sg.user.id,))
-                                    if archiveType == 'error': archiveType == 'forgery'
+                                    if archiveType == 'error': archiveType = 'forgery'
                                 else:
                                     sg.logger.info('avant db ' + obj.__class__.__name__)
                                     obj = sg.db.upsert(obj, session)
