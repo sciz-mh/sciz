@@ -259,7 +259,7 @@ class battleEvent(Event):
             if hasattr(self, 'flag_dressage_nok_hit') and self.flag_dressage_nok_hit is not None:
                 self.type += ' impossible (effrayé)'
             if hasattr(self, 'flag_dressage_nok_sr') and self.flag_dressage_nok_sr is not None:
-                self.type += ' raté (inquiet)'
+                self.type += ' sans effet (inquiet)'
             if hasattr(self, 'flag_dressage_nok_mouchoo') and self.flag_dressage_nok_mouchoo is not None:
                 self.type += ' impossible (non mouché)'
             if hasattr(self, 'flag_dressage_start') and self.flag_dressage_start is not None:
