@@ -260,7 +260,7 @@ battleEvent:
   re_painthure_face: 'Il\s+a\s+painthuré\s*:\s*(?P<capa_desc>.+)'
   re_painthure_effet: '(Cette\s+painthure\s+de\s+guerre\s+a\s+pour\s+effet\s*:\s*\[(?P<capa_effet>.+)\]\s+pendant\s+(?P<capa_tour>\d+)\s+DLA)(?s)'
   re_dressage_nok_hit: '(?P<flag_dressage_nok_hit>semble\s+effrayé\s+par\s+vos\s+paroles)(?s)'
-  re_dressage_nok_sr: '(?P<flag_dressage_nok_sr>tourne\s+sa\s+tête\s+visiblement\s+inquiet\s+de\s+quelque\s+chose)(?s)'
+  re_dressage_nok_sr: '(?P<flag_dressage_nok_sr>tourne\s+.a\s+tête\s+visiblement\s+inquiet\s+de\s+quelque\s+chose)(?s)'
   re_dressage_nok_mouchoo: '(?P<flag_dressage_nok_mouchoo>avait\s+quelques\s+mouches\s+à\s+vous\s+peut\s+être\s+que)(?s)'
   re_dressage_start: '(?P<flag_dressage_start>vous\s+a\s+remarqué\s*,\s*il\s+vous\s+regarde)(?s)'
   re_dressage_almost_ok: '(?P<flag_dressage_almost_ok>boit\s+littéralement\s+vos\s+paroles)(?s)'
