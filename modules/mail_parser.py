@@ -204,8 +204,12 @@ class MailParser:
             except KeyError as e:
                 sg.logger.error('No class %s imported for an allowed parsing, aborting...' % _class)
                 return None
+            msglog = ''
             for key in value_set:
                 setattr(obj, key, value_set[key])
+                if value_set[key] is not None:
+                    msglog = msglog + ' [' + key + ', ' + value_set[key] + ']'
+            sg.logger.info('processing ' + obj.__class__.__name__ + msglog)
             obj.mail_subject = subject
             obj.mail_body = body
             # If we did not find the owner of the mail we fix it (followers mail)

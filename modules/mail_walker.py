@@ -57,7 +57,18 @@ class MailWalker:
             # Build a sorted list of key-message by 'Date' header #RFC822
             sorted_mbox = sorted(mbox.iteritems(), key=lambda x: email.utils.parsedate(x[1].get('Date')))
             # Then get the actuals mails
-            actual_mails = [(mbox.get_file(item[0])._file.name, email.message_from_string(mbox.get_string(item[0]))) for item in sorted_mbox]
+            #actual_mails = [(mbox.get_file(item[0])._file.name, email.message_from_string(mbox.get_string(item[0]))) for item in sorted_mbox]
+            actual_mails = []
+            for item in sorted_mbox:
+                try:
+                    s = mbox.get_string(item[0])
+                    m = (mbox.get_file(item[0])._file.name, email.message_from_string(s))
+                    actual_mails.append(m)
+                except Exception as e:
+                    sg.logger.error('exception au parsing \'%s\'' % mbox.get_file(item[0])._file.name, exc_info=True)
+                    sg.logger.exception(e)
+                    self.archive(sg.user, mbox.get_file(item[0])._file.name, 'exception')
+
             parsed_mails = [(file_path, self.mp.parse_mail(mail)) for (file_path, mail) in actual_mails]
             # Then re-sort by MH date, then by remaining life points (multiple events at same time)
             parsed_mails_with_attrs = [(n, s, b, f, h, self.re_time.search(b) if b else None, self.re_vie.search(b) if b else None) for (n, (s, b, f, h)) in parsed_mails]

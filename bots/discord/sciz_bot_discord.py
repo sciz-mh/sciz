@@ -2,7 +2,7 @@
 #coding: utf-8
 
 # IMPORTS
-import sys, asyncio, aiohttp, json, redis, re, yaml, codecs
+import sys, asyncio, aiohttp, json, redis, re, yaml, codecs, datetime, traceback
 from discord import Game, Intents
 from discord.ext.tasks import loop
 from discord.ext.commands import Bot
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     @bot.event
     async def on_ready():
         await bot.change_presence(activity=Game(name='Mountyhall'))
-        print('Logged in as ' + bot.user.name)
+        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' Logged in as ' + bot.user.name, flush=True)
 
     # Define bot commands
     @bot.command(name='sciz', pass_context=True)
@@ -71,6 +71,7 @@ if __name__ == '__main__':
             r.set(channel_id, m.group(1))
             r.save()
             await ctx.send('Hook enregistré pour ce canal')
+            print('add channel', channel_id, flush=True);
             return
         # Handle no JWT
         if jwt is None:
@@ -100,7 +101,8 @@ if __name__ == '__main__':
                             i += 1
                 raw_response.release()
         except Exception as e:
-            print(e, file=sys.stderr)
+            print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in _sciz_request', file=sys.stderr, flush=True)
+            print(e, file=sys.stderr, flush=True)
             pass
 
     # Define bot routine (SCIZ events)
@@ -119,10 +121,30 @@ if __name__ == '__main__':
                             if 'events' in response:
                                 for e in response['events']:
                                     if 'message' in e:
-                                        await bot.get_channel(int(channel_id)).send(e['message'])
+                                        try:
+                                            channel = bot.get_channel(int(channel_id))
+                                            if channel:
+                                                ret = await channel.send(e['message'])
+                                                if jwt.decode(DEFAULT_CHARSET) == 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTc4OTMxNDIsIm5iZiI6MTYxNzg5MzE0MiwianRpIjoiNzdmZDFjNmQtNGFkNS00ZDUyLThiYzMtYzI0YjZmYjJlZTM5IiwiaWRlbnRpdHkiOjkyNywiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIiwidXNlcl9jbGFpbXMiOnsiaG9va190eXBlIjoiSE9PSyIsImlkIjo5MjcsInR5cGUiOiJEaXNjb3JkIn19.ZTLMS9uT_kqARvF0yEYBIhAzb5YKxvw81WXhiosKld4': # discord cotterie Beromont
+                                                    print(ret, flush=True);
+                                                    print('_sciz_fetch_events', e['message'], flush=True)
+                                            else:
+                                                print('*** _sciz_fetch_events no channel ', jwt, e['message'], flush=True)
+                                                pass
+                                        except Exception as e:
+                                            print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in send', flush=True)
+                                            print(e, flush=True)
+                                            print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in send', file=sys.stderr)
+                                            traceback.print_exc()
+                                            print('', file=sys.stderr, flush=True)
+                                            pass
                         raw_response.release()
             except Exception as e:
-                print(e, file=sys.stderr)
+                print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in _sciz_fetch_events', flush=True)
+                print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in _sciz_fetch_events', file=sys.stderr)
+                #print(e, file=sys.stderr)
+                traceback.print_exc()
+                print('', file=sys.stderr, flush=True)
                 pass
 
     # Start the bot
@@ -130,6 +152,9 @@ if __name__ == '__main__':
     try:
         bot.run(conf_discord[CONF_DISCORD_TOKEN])
     except Exception as e:
-        print(e)
+        print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' crash')
+        print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' crash', file=sys.stderr)
+        print(e, file=sys.stderr, flush=True)
+        print(e, flush=True)
         task.cancel()
 

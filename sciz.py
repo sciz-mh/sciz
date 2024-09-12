@@ -131,26 +131,44 @@ class SCIZ:
         #        mails.remove(mail)
         #sorted_mbox = sorted(mails, key=lambda x: email.utils.parsedate(x[1].get('Date')))
 
-        print('test session using "with"')
-        try:
-            with sg.db.sessionMaker() as session:
-                sql = """ select max_mh_sp_static from public.user where id= %(_id)s """
-                params = {'_id': 91305}
-                r = session.execute(sql % params)
-                l = list(r)
-                print('before', l[0][0])
-                sql = """ update public.user set max_mh_sp_static=5 where id=%(_id)s """
-                session.execute(sql % params)
-                sql = """ select max_mh_sp_static from public.user where id= %(_id)s """
-                r = session.execute(sql % params)
-                l = list(r)
-                print('after', l[0][0])
-                # sql error to test auto rollback
-                sql = """ select max_mh_sp_staticx from public.user where id= %(_id)s """
-                #r = session.execute(sql % params)
-                #session.commit()
-        except Exception as e:
-            print(e)
+        #print('test session using "with"')
+        #try:
+        #    with sg.db.sessionMaker() as session:
+        #        sql = """ select max_mh_sp_static from public.user where id= %(_id)s """
+        #        params = {'_id': 91305}
+        #        r = session.execute(sql % params)
+        #        l = list(r)
+        #        print('before', l[0][0])
+        #        sql = """ update public.user set max_mh_sp_static=5 where id=%(_id)s """
+        #        session.execute(sql % params)
+        #        sql = """ select max_mh_sp_static from public.user where id= %(_id)s """
+        #        r = session.execute(sql % params)
+        #        l = list(r)
+        #        print('after', l[0][0])
+        #        # sql error to test auto rollback
+        #        sql = """ select max_mh_sp_staticx from public.user where id= %(_id)s """
+        #        #r = session.execute(sql % params)
+        #        #session.commit()
+        #except Exception as e:
+        #    print(e)
+
+        print('analyse pb mail')
+        from operator import itemgetter
+        self.mp = MailParser()
+        self.re_time = re.compile('Il était alors (aux alentours de )?: (?P<time>.*)\.')
+        self.re_vie = re.compile('(reste actuellement|avez maintenant)\s+(?P<vie>\d+)\s+(p|P)oints? de (v|V)ie')
+        mbox = mailbox.Maildir("/tmp/mail.pb", create=True)
+        # Build a sorted list of key-message by 'Date' header #RFC822
+        sorted_mbox = sorted(mbox.iteritems(), key=lambda x: email.utils.parsedate(x[1].get('Date')))
+        # Then get the actuals mails
+        for item in sorted_mbox:
+            #print(mbox.get_file(item[0])._file.name)
+            try:
+                s = mbox.get_string(item[0])
+                #print(email.message_from_string(s))
+                #print('OK')
+            except Exception as e:
+                print('execption', e, mbox.get_file(item[0])._file.name)
 
         print('end of test')
         pass
