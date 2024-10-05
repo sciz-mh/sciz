@@ -77,7 +77,7 @@ subjects:
 # Regexps for the forwarding confirmation mails
 MailHelper:
   re_gmail_desc: '(?P<sender>.+)((\s+a\s+demandé\s+à\s+transférer)|(\s+has\s+requested\s+to\s+automatically\s+forward\s+mail))'
-  re_gmail_link: '(?P<link>https://mail-settings.google.com/[^\n]*)'
+  re_gmail_link: '(?P<link>https://mail.google.com/mail/[^\n]*)'
   re_yahoo_link: '<a href=''(?P<link>.+)''>Cliquez ici</a>(?s)'
 
 # Regexps common to all MH mails

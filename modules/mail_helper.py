@@ -34,8 +34,11 @@ class MailHelper:
         self.smtp_pwd = sg.conf[sg.CONF_SMTP_SECTION][sg.CONF_SMTP_PWD]
    
     def build_gmail(self):
-        if not hasattr(self, 'sender') or not hasattr(self, 'link'):
-            sg.logger.warning('Detected GMAIL but failed to parse sender or link...')
+        if not hasattr(self, 'sender'):
+            sg.logger.warning('Detected GMAIL but failed to parse sender...')
+            return
+        if not hasattr(self, 'link'):
+            sg.logger.warning('Detected GMAIL but failed to parse link...')
             return
         sender = self.sender
         link = self.link
