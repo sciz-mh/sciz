@@ -44,15 +44,19 @@ class MailHelper:
         link = self.link
         # Build the answer
         subject = '[SCIZ] Lien de confirmation de transfert GMAIL'
-        text = 'Votre lien de transfert GMAIL pour %s est : %s' % (sg.user.mail, link)
-        html = '''
+        text = """Voici votre lien de transfert GMAIL pour %s
+        ATTENTION, vous recevez 2 messages : l'un pour valider le transfert, l'autre pour l'interdire. Lisez bien ce que dit la page google !
+        %s""" % (sg.user.mail, link)
+        html = """
         <html>
             <head></head>
             <body>
-                <p>Votre lien de transfert pour %s est : %s</p>
+                <p>Voici votre lien de transfert pour %s</p>
+                <p>ATTENTION, vous recevez 2 messages : l'un pour valider le transfert, l'autre pour l'interdire. Lisez bien ce que dit la page google !</p>
+                <p>%s</p>
             </body>
         </html>
-        ''' % (sg.user.mail, link)
+        """ % (sg.user.mail, link)
         # Send the mail
         self.send_mail(sender, subject, text, html)
 
