@@ -211,7 +211,7 @@ battleEvent:
   re_piege: '(\n\s*\-\s*(?P<def_nom>.+?)\s+\((?P<def_id>\d+)\)\s+a\s+été\s+victime)(?s)'
   re_inter_def: '(a\s+attaqué\s+(?P<autre_nom>.+?)\s+\((?P<autre_id>\d+)\))(?s)'
   re_glue: '(?P<capa_effet>(immobilisé|englué))e? (pendant|pour) (?P<capa_tour>\d+) tours?'
-  re_gds: '(malus\s+de\s+(?P<capa_desc>Poison\s+(Insidieux|Virulent))\s+de\s+(?P<capa_effet>\d+ PV)\s+pour\s+(vos|ses|son)(\s+(?P<capa_tour>\d+))?\s+prochains?\s+tours?)(?s)'
+  re_gds: '(provoque\s+un\s+(?P<capa_desc>Venin\s+(Insidieux|Virulent))\s+de\s+(?P<capa_effet>\d+ PV)\s+pour\s+(vos|ses|son)(\s+(?P<capa_tour>\d+))?\s+prochains?\s+tours?)(?s)'
   re_ronfle: '\(\d+\)\s+(?P<type>ronfle)\.'
   re_enfume: 'vous a (?P<type>enfumé)'
   re_fatigue: 'fatigue (est|a) augmentée? de (?P<fatigue>\d+)'
