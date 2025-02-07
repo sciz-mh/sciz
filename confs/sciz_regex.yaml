@@ -233,7 +233,7 @@ battleEvent:
   re_insulte_nok: '(?P<flag_insulte_nok>Néanmoins\s+le\s+regard\s+de\s+celui-ci\s+se\s+porte)(?s)'
   re_insulte_meh: '(?P<flag_insulte_meh>semble\s+avoir\s+entendu\s+votre\s+insulte)(?s)'
   re_he: '(Votre\s+cible\s+(n'')?est( pas)?\s+(?P<he>Effrayée))(?s)'
-  re_retraite: 'un mouvement de (?P<dir_for>retraite) vers le (?P<direction>\w+)'
+  re_retraite: 'un mouvement de (?P<dir_for>retraite) vers l(e |'')(?P<direction>\w+)'
   re_pistage_pos: 'Vous\s+êtes\s+en\s+X\s*=\s*(?P<pos_x>-?\d+)\s*,\s*Y\s*=\s*(?P<pos_y>-?\d+)\s*,\s*N\s*=\s*(?P<pos_n>-?\d+)'
   re_pistage_a_portee: 'se\s+trouve\s+plus\s+vers\s+(?P<direction>.+)'
   re_pistage_hors_portee: 'semble\s+(?P<flag_pistage_hors>hors de portée)'
