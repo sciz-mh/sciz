@@ -186,6 +186,7 @@ battleEvent:
   re_capa_desc: '(?P<FLAG_CHECK_EXCLUDES>(capacité\s+spéciale\s+:\s+(?P<capa_desc>[^\n]+)))(?s)'
   re_capa_desc_mythiques: '(?P<FLAG_CHECK_EXCLUDES>(a\s+déclenché\s+:\s+(?P<capa_desc>[^\n]+\n((?!C''est une malédiction)[^\n]+)?)))(?s)'
   re_capa_effet: '(?P<FLAG_CHECK_EXCLUDES>effet (?P<flag_resist>REDUIT\s+)?: (?P<capa_effet>.+))'
+  re_capa_effet_reduit: '(?P<FLAG_CHECK_EXCLUDES>effet (?P<flag_resist>REDUIT))'
   re_capa_tour: '(?P<FLAG_CHECK_EXCLUDES>(durée de|durant|pour|pendant) (?P<capa_tour>\d+) tour)'
   re_capa_pv: '(?P<FLAG_CHECK_EXCLUDES>Résultat : (?P<pdv>\d+) points?)'
   # The others
