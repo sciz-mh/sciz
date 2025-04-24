@@ -38,7 +38,7 @@ import traceback
 # WEBAPP DEFINITION
 webapp = Flask('SCIZ', static_folder='./web/dist-public/static', template_folder='./web/dist-public/template')
 #if webapp.debug or webapp.testing or webapp.env != 'production':
-cors = CORS(webapp, resources={r"/api/*": {"origins": "*"}})
+#    cors = CORS(webapp, resources={r"/api/*": {"origins": "*"}})
 jwt = JWTManager()
 oauth = OAuth()
 
