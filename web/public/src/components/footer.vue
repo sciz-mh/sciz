@@ -36,7 +36,7 @@ export default {
 			{ img: 'logo-104126', href: 'http://games.mountyhall.com/mountyhall/View/PJView.php?ai_IDPJ=104126'},
 			{ img: 'logo-mh', href: 'http://www.mountyhall.com/Forum/display_topic_threads.php?ForumID=21&TopicID=173262' },
 			{ img: 'logo-miaou', href: 'https://miaou.dystroy.org/2603?SCIZ' },
-			{ img: 'logo-github', href: 'https://github.com/erk3/sciz' }
+			{ img: 'logo-github', href: 'https://github.com/sciz-mh/sciz' }
 		]
 	}),
 	methods: {
