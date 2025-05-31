@@ -84,7 +84,7 @@ class tresorEvent(Event):
                 # We fix this by generating one, going backward, hopefully not creating any collision
                 self.tresor_id = min(-1, sg.db.session.query(func.min(Tresor.id)).scalar() - 1)
             # Special handling for maps
-            res = re.search('((?P<nom>Carte des Raccourcis) : (?P<effet>\w+))(?s)', self.nom)
+            res = re.search('(?s)((?P<nom>Carte des Raccourcis) : (?P<effet>\w+))', self.nom)
             if res is not None:
                 self.nom = res.groupdict()['nom']
                 self.effet = res.groupdict()['effet']

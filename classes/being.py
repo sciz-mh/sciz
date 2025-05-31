@@ -40,7 +40,7 @@ class Being(sg.sqlalchemybase):
         if oid is None or nom is None:
             return '', '', ''
         if int(oid) > 300000:
-            res = re.search('(((?P<mob_det>une?)\s+)?(?P<mob_nom>.+)\s+\[(?P<mob_age>.+)\]\s*(?P<mob_tag>.+)?)(?s)', nom)
+            res = re.search('(?s)(((?P<mob_det>une?)\s+)?(?P<mob_nom>.+)\s+\[(?P<mob_age>.+)\]\s*(?P<mob_tag>.+)?)', nom)
             if res is not None:
                 mob_nom = re.sub('\s+', ' ', res.groupdict()['mob_nom']).strip()
                 mob_age = re.sub('\s+', ' ', res.groupdict()['mob_age']).strip()
