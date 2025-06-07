@@ -68,6 +68,8 @@ class MhCaller:
     # See http://ftp.mountyhall.com/help.txt
     def trolls2_ftp_call(self):
         sg.logger.info('Calling trolls2 MH FTP...')
+        # known guildes in SCIZ (there are inconsistance in MH : Trolls in guilde that do not exists)
+        existing_guilde = [str(r.id) for r in sg.db.session.query(Guilde.id)]
         # Get the file
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpTrolls2))
@@ -75,16 +77,38 @@ class MhCaller:
         trolls = []
         i = 0
         for line in lines:
-            if line.count(sep) == 15: # Some lines are wrongly formated
+            if line.count(sep) >= 14: # Some lines are wrongly formated
                 # Get the data for each troll
+                # because of ";" in name, we have to do it the hard way :(
                 troll = Troll()
-                troll.id, troll.nom, troll.race, troll.niv, troll.nb_kill, troll.nb_mort, troll.nb_mouche, troll.guilde_id,\
-                troll.guilde_rang, troll.etat, troll.intangible, troll.pnj, troll.ami_mh, troll.inscription_date,\
-                troll.blason_uri, empty = line.split(sep)
+                t = line.split(';');
+                l = len(t)
+                troll.blason_uri = t[l-1]
+                if troll.blason_uri.startswith('base64') and l > 15:
+                    # special URL data:image/jpg;base64,...
+                    troll.blason_uri = ';'.join(t[l-2:l])
+                    l = l-1
+                troll.id = t[0]
+                troll.nom = ';'.join(t[1:l-13])
+                troll.race = t[l-13]
+                troll.niv = t[l-12]
+                troll.nb_kill = t[l-11]
+                troll.nb_mort = t[l-10]
+                troll.nb_mouche = t[l-9]
+                troll.guilde_id = t[l-8]
+                troll.guilde_rang = t[l-7]
+                troll.etat = t[l-6]
+                troll.intangible = t[l-5]
+                troll.pnj = t[l-4]
+                troll.ami_mh = t[l-3]
+                troll.inscription_date = t[l-2]
                 # Fix the data
                 if not troll.inscription_date:
                     troll.inscription_date = None
-                troll.guilde_id = None
+                if (troll.guilde_id == '0' or troll.guilde_id == '1'):
+                    troll.guilde_id = None
+                elif not troll.guilde_id in existing_guilde:
+                    troll.guilde_id = None
                 troll.etat = None
                 troll.intangible = troll.intangible != '0'
                 troll.ami_mh = troll.ami_mh != '0'
@@ -95,13 +119,17 @@ class MhCaller:
                 i += 1
                 if i % 100 == 0:
                     time.sleep(0.1)
-        # Separate existing and new objects
+        # insert being
+        existing = [str(r.id) for r in sg.db.session.query(Being.id).filter(Being.id.in_([troll.id for troll in trolls])).all()]
+        to_insert = [troll for troll in trolls if str(troll.id) not in existing]
+        if len(to_insert) > 0:
+            sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=troll.id, nom=troll.nom, type='Trõll')) for troll in to_insert])
+        # insert troll (as of june 2025, there are troll present in being but not in being_troll, so we have to build another to_insert)
         existing = [str(r.id) for r in sg.db.session.query(Troll.id).filter(Troll.id.in_([troll.id for troll in trolls])).all()]
         to_insert = [troll for troll in trolls if str(troll.id) not in existing]
         to_update = [troll for troll in trolls if str(troll.id) in existing]
         # Bulk insert new objects
         if len(to_insert) > 0:
-            sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=troll.id, nom=troll.nom, type='Trõll')) for troll in to_insert])
             sg.db.engine.execute(Troll.__table__.insert(), [sg.row2dict(troll) for troll in to_insert])
         # Bulk update old objects
         if len(to_update) > 0:
@@ -123,7 +151,7 @@ class MhCaller:
             if line.count(sep) > 0:
                 # Get the data for each mob_meta
                 metamob = MetaMob()
-                metamob.id, metamob.nom, metamob.determinant, metamob.blason_uri, empty = line.split(sep)
+                metamob.id, metamob.nom, metamob.determinant, metamob.blason_uri = line.split(sep)
                 # Upsert the troll
                 sg.db.upsert(metamob, session)
         # Some data are missing...
@@ -158,7 +186,7 @@ class MhCaller:
             if line.count(sep) > 0:
                 # Get the data for each tresor_meta
                 metatresor = MetaTresor()
-                metatresor.id, metatresor.nom, metatresor.type, empty = line.split(sep)
+                metatresor.id, metatresor.nom, metatresor.type = line.split(sep)
                 # Fix the data
                 metatresor.nom = re.sub('\s*:\s*$', '', metatresor.nom)
                 # Upsert the troll
@@ -176,7 +204,7 @@ class MhCaller:
         session = sg.db.new_session()
         for line in lines:
             if line.find(sep) > 0:
-                meta_id, meta_nom, meta_subtype, meta_pa, meta_duree, meta_rm, meta_surface, meta_zone, empty = line.split(sep)
+                meta_id, meta_nom, meta_subtype, meta_pa, meta_duree, meta_rm, meta_surface, meta_zone = line.split(sep)
                 metacapa = MetaCapa(id=meta_id, nom=meta_nom, type='Sortilège', subtype=meta_subtype, pa=meta_pa)
                 sg.db.upsert(metacapa, session)
         session.commit()
@@ -189,22 +217,23 @@ class MhCaller:
         session = sg.db.new_session()
         for line in lines:
             if line.find(sep) > 0:
-                meta_id, meta_nom, meta_subtype, meta_pa, meta_pourcentage_base, meta_niv_min, empty = line.split(sep)
+                meta_id, meta_nom, meta_subtype, meta_pa, meta_pourcentage_base, meta_niv_min = line.split(sep)
                 metacapa = MetaCapa(id='-' + meta_id, nom=meta_nom, type='Compétence', subtype=meta_subtype, pa=meta_pa)
                 sg.db.upsert(metacapa, session)
         # Some data are missing...
-        missing_capas = [
-            {'id': 1001, 'nom': 'Projectile Magique', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
-            {'id': 1002, 'nom': 'Rafale Psychique', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
-            {'id': 1003, 'nom': 'Hypnotisme', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
-            {'id': 1004, 'nom': 'Vampirisme', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
-            {'id': 1005, 'nom': 'Siphon des âmes', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
-        ]
-        for missing_capa in missing_capas:
-            metacapa = MetaCapa()
-            for key in missing_capa:
-                setattr(metacapa, key, missing_capa[key])
-            sg.db.upsert(metacapa, session)
+        # as of June 2025, not missing, id 1, 2, 3, 4,15 for reserved sort . I cleanup the database for the doubles
+        #missing_capas = [
+        #    {'id': 1001, 'nom': 'Projectile Magique', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
+        #    {'id': 1002, 'nom': 'Rafale Psychique', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
+        #    {'id': 1003, 'nom': 'Hypnotisme', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
+        #    {'id': 1004, 'nom': 'Vampirisme', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
+        #    {'id': 1005, 'nom': 'Siphon des âmes', 'type': 'Sortilège', 'subtype': 'Attaque', 'pa': 4},
+        #]
+        #for missing_capa in missing_capas:
+        #    metacapa = MetaCapa()
+        #    for key in missing_capa:
+        #        setattr(metacapa, key, missing_capa[key])
+        #    sg.db.upsert(metacapa, session)
         session.commit()
         session.close()
 
@@ -225,7 +254,9 @@ class MhCaller:
         if res is not None:
             mh_call.status = res.group(1)
             sg.db.upsert(mh_call)
-            sg.logger.warning('Error %s while calling profil4 for user %s' % (mh_call.status, user.id))
+            msgStatus = mh_call.status
+            if msgStatus == '3': msgStatus = '3 (bad password)'
+            sg.logger.warning('Error %s while calling profil4 for user %s' % (msgStatus, user.id))
             if mh_call.status == '6' or mh_call.status == '2':
                 sg.logger.warning('MH account for user %s is deactivated, setting SP limits to 0 and disabling hook propagation' % (user.id,))
                 user.max_mh_sp_static = user.max_mh_sp_dynamic = 0
@@ -246,6 +277,12 @@ class MhCaller:
         troll.niv = data['troll']['niveau']
         troll.race = data['troll']['race']
         troll.guilde_id = data['troll']['guilde']
+        # guilde is now an array, keep only the first one
+        if (hasattr(troll.guilde_id, '__len__')):
+            if troll.guilde_id:
+                troll.guilde_id = troll.guilde_id[0]
+            else:
+                troll.guilde_id = None
         sg.db.upsert(troll)
         # TrollPrivate
         troll_private = TrollPrivate()
@@ -326,15 +363,21 @@ class MhCaller:
                 metacapa = session.query(MetaCapa).filter(MetaCapa.nom == capa['nom']).one()
                 n = 1
                 for percent in capa['niveaux']:
-                    sub = None if not 'types' in capa or len(capa['types']) < 1 else capa['types'][n-1]
+                    if not 'types' in capa or len(capa['types']) < 1:
+                        sub = None
+                    else:
+                        sub = list(capa['types'])[0]
                     try:
-                        if sub is None:
-                            troll_private_capa = session.query(TrollPrivateCapa).filter(TrollPrivateCapa.metacapa_id == metacapa.id, TrollPrivateCapa.troll_id == user.id, TrollPrivateCapa.niv == n, TrollPrivateCapa.subtype == sub, TrollPrivateCapa.viewer_id == user.id).one()
-                        else:
-                            troll_private_capa = session.query(TrollPrivateCapa).filter(TrollPrivateCapa.metacapa_id == metacapa.id, TrollPrivateCapa.troll_id == user.id, TrollPrivateCapa.niv == n, TrollPrivateCapa.viewer_id == user.id).one()
-                    except (NoResultFound, MultipleResultsFound):
+                    #    if sub is None:
+                    #        troll_private_capa = session.query(TrollPrivateCapa).filter(TrollPrivateCapa.metacapa_id == metacapa.id, TrollPrivateCapa.troll_id == user.id, TrollPrivateCapa.niv == n, TrollPrivateCapa.subtype == sub, TrollPrivateCapa.viewer_id == user.id).one()
+                    #    else:
+                    #        troll_private_capa = session.query(TrollPrivateCapa).filter(TrollPrivateCapa.metacapa_id == metacapa.id, TrollPrivateCapa.troll_id == user.id, TrollPrivateCapa.niv == n, TrollPrivateCapa.viewer_id == user.id).one()
+                        troll_private_capa = session.query(TrollPrivateCapa).filter(TrollPrivateCapa.metacapa_id == metacapa.id, TrollPrivateCapa.troll_id == user.id, TrollPrivateCapa.niv == n, TrollPrivateCapa.viewer_id == user.id).one()
+                    #except (NoResultFound, MultipleResultsFound):
+                    except (NoResultFound):
                         troll_private_capa = TrollPrivateCapa()
-                    troll_private_capa.troll_id = troll_private_capa.viewer_id = user.id
+                    troll_private_capa.troll_id = user.id
+                    troll_private_capa.viewer_id = user.id
                     troll_private_capa.metacapa_id = metacapa.id
                     troll_private_capa.niv = n
                     troll_private_capa.percent = percent
@@ -342,8 +385,11 @@ class MhCaller:
                     troll_private_capa.bonus = capa['bonus']
                     n += 1
                     sg.db.upsert(troll_private_capa, session)
-            except (NoResultFound, MultipleResultsFound):
-                sg.logger.warning("Unknown capa '%s' retrieved from MH while upadating troll %s" % (capa['nom'], user.id))
+            #except (NoResultFound, MultipleResultsFound):
+            #    sg.logger.warning("Double capa '%s' retrieved from MH while updating troll %s" % (capa['nom'], user.id))
+            except Exception as e:
+                sg.logger.warning("Error capa '%s' retrieved from MH while updating troll %s" % (capa['nom'], user.id))
+                sg.logger.exception(e)
         session.commit()
         session.close()
         if verbose:
@@ -368,7 +414,9 @@ class MhCaller:
         if res is not None:
             mh_call.status = res.group(1)
             sg.db.upsert(mh_call)
-            sg.logger.warning('Error %s while calling Vue2 for user %s' % (mh_call.status, user.id))
+            msgStatus = mh_call.status
+            if msgStatus == '3': msgStatus = '3 (bad password)'
+            sg.logger.warning('Error %s while calling Vue2 for user %s' % (msgStatus, user.id))
             if mh_call.status == '6' or mh_call.status == '2':
                 sg.logger.warning('MH account for user %s is deactivated, setting SP limits to 0 and disabling hook propagation' % (user.id,))
                 user.max_mh_sp_static = user.max_mh_sp_dynamic = 0
@@ -440,7 +488,15 @@ class MhCaller:
                     objs_set[Troll].append(troll)
                     objs_set[TrollPrivate].append(troll_private)
                 elif flag == 2:
-                    mob_id, mob_nom, mob_pos_x, mob_pos_y, mob_pos_n = line.split(sep)
+                    #mob_id, mob_nom, mob_pos_x, mob_pos_y, mob_pos_n = line.split(sep)
+                    # manage ";" inside the name : get fist part (id), last part (count) and all others together for the name
+                    t = line.split(sep)
+                    l = len(t)
+                    mob_id = t[0]
+                    mob_pos_x = t[l-3]
+                    mob_pos_y = t[l-2]
+                    mob_pos_n = t[l-1]
+                    mob_nom = ';'.join(t[1:l-3])
                     mob = Mob(id=mob_id, mort=False)
                     mob.nom, mob.age, mob.tag = Being.parse_name(mob_id, mob_nom)
                     mob_private = MobPrivate(mob_id=mob_id, viewer_id=user.id,
@@ -455,18 +511,22 @@ class MhCaller:
                                                  last_seen_at=now, last_seen_by=user.id, last_seen_with='SV2')
                     objs_set[TrollPrivate].append(troll_private)
                 elif flag == 4:
-                    try:
-                        lieu_id, lieu_nom, lieu_pos_x, lieu_pos_y, lieu_pos_n = line.split(sep) # For some reason theres is places with html entities in the name...
-                        lieu = Lieu(id=lieu_id, nom=lieu_nom,
-                                    pos_x=lieu_pos_x, pos_y=lieu_pos_y, pos_n=lieu_pos_n,
-                                    last_seen_at=now, last_seen_by=user.id, last_seen_with='SV2')
-                        if 'Portail' in lieu_nom:
-                            lieu.type = 'Portail'
-                        if 'Piège' in lieu_nom:
-                            lieu.type = 'Piège'
-                        objs_set[Lieu].append(lieu)
-                    except Exception as e:
-                        pass
+                    #lieu_id, lieu_nom, lieu_pos_x, lieu_pos_y, lieu_pos_n = line.split(sep) # For some reason theres is places with html entities in the name...
+                    t = line.split(sep)
+                    l = len(t)
+                    lieu_id = t[0]
+                    lieu_pos_x = t[l-3]
+                    lieu_pos_y = t[l-2]
+                    lieu_pos_n = t[l-1]
+                    lieu_nom = ';'.join(t[1:l-3])
+                    lieu = Lieu(id=lieu_id, nom=lieu_nom,
+                                pos_x=lieu_pos_x, pos_y=lieu_pos_y, pos_n=lieu_pos_n,
+                                last_seen_at=now, last_seen_by=user.id, last_seen_with='SV2')
+                    if 'Portail' in lieu_nom:
+                        lieu.type = 'Portail'
+                    if 'Piège' in lieu_nom:
+                        lieu.type = 'Piège'
+                    objs_set[Lieu].append(lieu)
                 elif flag == 5:
                     tresor_id, tresor_type, tresor_pos_x, tresor_pos_y, tresor_pos_n = line.split(sep)
                     tresor = Tresor(id=tresor_id, type=tresor_type)
@@ -527,9 +587,12 @@ class MhCaller:
         guildes = []
         i = 0
         for line in lines:
-            if line.count(sep) == 3: # Some lines are wrongly formated
-                # Get the data
-                guilde_id, guilde_nom, guilde_count, _ = line.split(sep)
+            if line.count(sep) >= 2: # Some lines are wrongly formated
+                # manage ";" inside the name : get fist part (id), last part (count) and all others together for the name
+                t = line.split(';')
+                guilde_id = t[0]
+                guilde_count = t[len(t)-1]
+                guilde_nom = ';'.join(t[1:len(t)-1])
                 guilde = Guilde(id=guilde_id, nom=guilde_nom, count=guilde_count)
                 guildes.append(guilde)
         # Separate existing and new objects
