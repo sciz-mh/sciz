@@ -237,12 +237,29 @@ class MhCaller:
         session.commit()
         session.close()
 
+    def get_with_retries(self, user, url):
+        for iRetry in range(6):
+            try:
+                return requests.get(url)
+                break;
+            except Exception as e:
+                if hasattr(e, 'message'):
+                    msg = e.message
+                else:
+                    msg = '??'
+                sg.logger.warning("Error %s in GET for %s, try %s" % (msg, user.id, iRetry))
+                time.sleep(pow(2, iRetry) * 0.1)
+        sg.logger.warning("Give up GET for %s" % (user.id))
+        return None
+
     # Caller to the Profil4 SP
     def profil4_sp_call(self, user, verbose=False, manual=False):
         sg.logger.info('Calling profil4 for user %s' % user.id)
         now = datetime.datetime.now()
         # Fetch the data from MH
-        mh_r = requests.get('http://%s/%s?%s=%s&%s=%s' % (self.spURL, self.spProfil4, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key))
+        mh_r = self.get_with_retries(user, 'http://%s/%s?%s=%s&%s=%s' % (self.spURL, self.spProfil4, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key))
+        if mh_r is None:
+            return False
         mh_call = MhCall(user_id=user.id, nom='Profil4', type='Dynamique', time=now, status=0, manual=manual)
         # Check for error
         if mh_r.status_code != 200:
@@ -402,7 +419,9 @@ class MhCaller:
         now = datetime.datetime.now()
         sep = ';'
         # Fetch the data from MH
-        mh_r = requests.get('http://%s/%s?%s=%s&%s=%s&%s=1&%s=1&%s=1' % (self.spURL, self.spVue2, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key, self.spParamLieux, self.spParamTresors, self.spParamChampis))
+        mh_r = self.get_with_retries(user, 'http://%s/%s?%s=%s&%s=%s&%s=1&%s=1&%s=1' % (self.spURL, self.spVue2, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key, self.spParamLieux, self.spParamTresors, self.spParamChampis))
+        if mh_r is None:
+            return False
         mh_call = MhCall(user_id=user.id, nom='Vue2', type='Dynamique', time=now, status=0, manual=manual)
         # Check for error
         if mh_r.status_code != 200:
