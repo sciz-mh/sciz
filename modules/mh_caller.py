@@ -246,7 +246,7 @@ class MhCaller:
                 if hasattr(e, 'message'):
                     msg = e.message
                 else:
-                    msg = '??'
+                    msg = e.__class__.__name__
                 sg.logger.warning("Error %s in GET for %s, try %s" % (msg, user.id, iRetry))
                 time.sleep(pow(2, iRetry) * 0.1)
         sg.logger.warning("Give up GET for %s" % (user.id))
