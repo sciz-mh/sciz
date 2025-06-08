@@ -88,6 +88,7 @@ class AdminHelper:
         print('Start file observer')
         obs.start()
         print('File observer started')
+        sg.logger.info('File observer started')
         try:
             while True:
                 time.sleep(1)

@@ -402,8 +402,8 @@ class MhCaller:
                     troll_private_capa.bonus = capa['bonus']
                     n += 1
                     sg.db.upsert(troll_private_capa, session)
-            #except (NoResultFound, MultipleResultsFound):
-            #    sg.logger.warning("Double capa '%s' retrieved from MH while updating troll %s" % (capa['nom'], user.id))
+            except (NoResultFound):
+                sg.logger.warning("unknown capa '%s' retrieved from MH while updating troll %s" % (capa['nom'], user.id))
             except Exception as e:
                 sg.logger.warning("Error capa '%s' retrieved from MH while updating troll %s" % (capa['nom'], user.id))
                 sg.logger.exception(e)

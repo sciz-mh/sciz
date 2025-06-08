@@ -487,7 +487,7 @@ def get_hook_treasures_for():
     hook = sg.db.session.query(Hook).get(get_jwt_identity())
     if hook is not None:
         data = request.get_json()
-        if 'ids' not in data or not all(i.isdigit() for i in data.get('ids')):
+        if 'ids' not in data or not all(isinstance(i, int) or i.isdigit() for i in data.get('ids')):
             return jsonify(message='Une erreur est survenue...'), 400
         return jsonify(treasures=hook.get_treasures_for(data.get('ids'))), 200
     return jsonify(message='Autorisation requise'), 401
