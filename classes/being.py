@@ -46,8 +46,14 @@ class Being(sg.sqlalchemybase):
                 mob_age = re.sub('\s+', ' ', res.groupdict()['mob_age']).strip()
                 mob_tag = re.sub('\s+', ' ', res.groupdict()['mob_tag']).strip() if res.groupdict()['mob_tag'] is not None else ''
                 return mob_nom.strip(), mob_age, mob_tag
-        return re.sub('\s+', ' ', nom).strip(), None, None
-
+        try:
+            # str(nom) because we get an integer with nom=100 and re.sub() fails on an integer :(
+            # the only professional languages are those with strong typing, including VB.NET :p
+            # note that PHP has strong typing for function arguments, return values, class attributes
+            return re.sub('\s+', ' ', str(nom)).strip(), None, None
+        except Exception as e:
+            sg.logger.warning("Unrecognized name '%s' for being %s" % (nom, oid))
+        return nom, None, None
 
 # SQLALCHEMY LISTENERS (same listener types executed in order)
 @event.listens_for(Being, 'before_insert', propagate=True)

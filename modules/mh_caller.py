@@ -512,17 +512,19 @@ class MhCaller:
                     t = line.split(sep)
                     l = len(t)
                     mob_id = t[0]
-                    mob_pos_x = t[l-3]
-                    mob_pos_y = t[l-2]
-                    mob_pos_n = t[l-1]
-                    mob_nom = ';'.join(t[1:l-3])
-                    mob = Mob(id=mob_id, mort=False)
-                    mob.nom, mob.age, mob.tag = Being.parse_name(mob_id, mob_nom)
-                    mob_private = MobPrivate(mob_id=mob_id, viewer_id=user.id,
-                                             pos_x=mob_pos_x, pos_y=mob_pos_y, pos_n=mob_pos_n,
-                                             last_seen_at=now, last_seen_by=user.id, last_seen_with='SV2')
-                    objs_set[Mob].append(mob)
-                    objs_set[MobPrivate].append(mob_private)
+                    # avoid conflict between Abishai Rose and troll Jàïmérÿ
+                    if mob_id != 1:
+                        mob_pos_x = t[l-3]
+                        mob_pos_y = t[l-2]
+                        mob_pos_n = t[l-1]
+                        mob_nom = ';'.join(t[1:l-3])
+                        mob = Mob(id=mob_id, mort=False)
+                        mob.nom, mob.age, mob.tag = Being.parse_name(mob_id, mob_nom)
+                        mob_private = MobPrivate(mob_id=mob_id, viewer_id=user.id,
+                                                 pos_x=mob_pos_x, pos_y=mob_pos_y, pos_n=mob_pos_n,
+                                                 last_seen_at=now, last_seen_by=user.id, last_seen_with='SV2')
+                        objs_set[Mob].append(mob)
+                        objs_set[MobPrivate].append(mob_private)
                 elif flag == 3:
                     obj, troll_pos_x, troll_pos_y, troll_pos_n = line.split(sep)
                     troll_private = TrollPrivate(troll_id=user.id, viewer_id=user.id,
