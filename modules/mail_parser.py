@@ -13,7 +13,7 @@ from classes.event_tresor import tresorEvent
 from classes.event_battle import battleEvent
 from classes.being import Being
 from modules.mail_helper import MailHelper
-import re, email, html.parser
+import re, email, html.parser, json
 import modules.globals as sg
 
 
@@ -143,7 +143,18 @@ class MailParser:
         # The .yaml config file must also have a section named as the
         # key that previously matched or at least the class name with all the
         # associated regexps to match in the mail
-        matchs = [(k, r.finditer(body)) for (k, r) in self.sections_regexps[_class]]
+        if hasattr(self, 'debug'):
+            matchs = []
+            for (k, r) in self.sections_regexps[_class]:
+                m  = r.finditer(body)
+                matchs.append((k, m))
+                mLog = []
+                for m2 in m:
+                    mLog.append(m2)
+                sg.logger.info('k=%s, r=%s' % (k, r))
+                sg.logger.info(mLog)
+        else:
+            matchs = [(k, r.finditer(body)) for (k, r) in self.sections_regexps[_class]]
         # We build a base event with the regexps that matched only once (first entry in res dictionnary)
         # And a list of events with the regexps that matched several time in the following entries of res dictionnary
         FLAG_EXCLUDE = 'FLAG_EXCLUDE'

@@ -103,7 +103,7 @@ class SCIZ:
         ### Create a test user
         #user = User(id=1, pwd_hash='test', mh_api_key='TEST')
         #sg.db.upsert(user)
-	###
+        ###
         #portals = sg.db.session.query(Portail).all()
         #for p in portals:
         #    p.type = 'Portail'
@@ -152,23 +152,31 @@ class SCIZ:
         #except Exception as e:
         #    print(e)
 
-        print('analyse pb mail')
-        from operator import itemgetter
-        self.mp = MailParser()
-        self.re_time = re.compile('Il était alors (aux alentours de )?: (?P<time>.*)\.')
-        self.re_vie = re.compile('(reste actuellement|avez maintenant)\s+(?P<vie>\d+)\s+(p|P)oints? de (v|V)ie')
-        mbox = mailbox.Maildir("/tmp/mail.pb", create=True)
-        # Build a sorted list of key-message by 'Date' header #RFC822
-        sorted_mbox = sorted(mbox.iteritems(), key=lambda x: email.utils.parsedate(x[1].get('Date')))
-        # Then get the actuals mails
-        for item in sorted_mbox:
-            #print(mbox.get_file(item[0])._file.name)
-            try:
-                s = mbox.get_string(item[0])
-                #print(email.message_from_string(s))
-                #print('OK')
-            except Exception as e:
-                print('execption', e, mbox.get_file(item[0])._file.name)
+        #print('analyse pb mail')
+        #from operator import itemgetter
+        #self.mp = MailParser()
+        #self.re_time = re.compile('Il était alors (aux alentours de )?: (?P<time>.*)\.')
+        #self.re_vie = re.compile('(reste actuellement|avez maintenant)\s+(?P<vie>\d+)\s+(p|P)oints? de (v|V)ie')
+        #mbox = mailbox.Maildir("/tmp/mail.pb", create=True)
+        ## Build a sorted list of key-message by 'Date' header #RFC822
+        #sorted_mbox = sorted(mbox.iteritems(), key=lambda x: email.utils.parsedate(x[1].get('Date')))
+        ## Then get the actuals mails
+        #for item in sorted_mbox:
+        #    #print(mbox.get_file(item[0])._file.name)
+        #    try:
+        #        s = mbox.get_string(item[0])
+        #        #print(email.message_from_string(s))
+        #        #print('OK')
+        #    except Exception as e:
+        #        print('execption', e, mbox.get_file(item[0])._file.name)
+
+        print('test baroufle')
+        sg.wk.mailDirPath = '/home/rouletabille/exemples/mails'
+        #sg.wk.mp.debug = True;
+        sg.user = sg.db.session.query(User).get(80117)
+        sg.wk.walk()
+        sg.user = sg.db.session.query(User).get(91305)
+        sg.wk.walk()
 
         print('end of test')
         pass
