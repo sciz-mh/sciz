@@ -209,13 +209,13 @@ class battleEvent(Event):
     # Additional build logics
     def build(self):
         super().build()
-        # Fix Baroufle
-        if self.type is not None and 'baroufle' in self.type.lower():
-            if hasattr(self, 'def_nom') and ((not hasattr(self, 'def_id')) or self.def_id is None):
-                m = re.match(r'\s*(?P<nom>.+)\s+\((?P<id>\d+)\)', self.def_nom)
-                if m:
-                    self.def_nom = m['nom']
-                    self.def_id = m['id']
+        # Fix the message to the owner of a follower whose a Troll (same or other) acts on
+        if self.type is not None and hasattr(self, 'def_nom') and self.def_nom is not None and ((not hasattr(self, 'def_id')) or self.def_id is None):
+            #sg.logger.info('type self.def_nom : %s' % type(self.def_nom))
+            m = re.match(r'\s*(?P<nom>.+)\s+\((?P<id>\d+)\)', self.def_nom)
+            if m:
+                self.def_nom = m['nom']
+                self.def_id = m['id']
         # Fix att/def_being
         fix_id = self.follower_id if hasattr(self, 'follower_id') else self.owner_id
         fix_nom = self.follower_nom if hasattr(self, 'follower_nom') else self.owner_nom
