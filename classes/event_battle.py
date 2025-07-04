@@ -238,7 +238,7 @@ class battleEvent(Event):
             self.build_reverse()
             return
         # Fix BAM/BUM
-        if self.type is not None and 'bulle' in self.type.lower():
+        if self.type is not None and 'bulle' in self.type.lower() and self.capa_effet is not None:
             self.capa_effet = ' ' + re.sub(r'sera\s+égale\s+à\s+', '', self.capa_effet)
             if hasattr(self, 'capa_desc') and self.capa_desc is not None:
                 self.capa_desc = 'Portail ' + ('d\'arrivée ' if 'arrivant' in self.capa_desc else 'de départ ') + self.capa_desc.split(' ')[0]

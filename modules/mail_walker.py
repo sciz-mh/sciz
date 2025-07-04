@@ -96,8 +96,12 @@ class MailWalker:
                                     obj = sg.db.upsert(obj, session)
                                     sg.logger.info('apres db')
                                     archiveType = 'archive'
-                            session.commit()
-                            sg.logger.info('apres commit')
+                            if hasattr(self, 'nocommit'):
+                                session.rollback()
+                                sg.logger.info('apres rollback')
+                            else:
+                                session.commit()
+                                sg.logger.info('apres commit')
                             if archiveType == 'error': archiveType = 'empty'
                     else:
                         archiveType = 'unrecognized'

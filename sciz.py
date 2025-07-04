@@ -55,7 +55,7 @@ class SCIZ:
         files = [('sciz', logger_file)]
         res = re.search(r'(.+)\.log', logger_file)
         if res is not None:
-            for logger_name in ['walker', 'updater', 'server', 'cleaner']:
+            for logger_name in ['walker', 'updater', 'server', 'cleaner', 'test']:
                 files.append((logger_name, res.group(1) + '_' + logger_name + '.log'))
         for logger_name, file in files:
             log_file = RotatingFileHandler(file, 'a', logger_file_max_size, 1)
@@ -170,8 +170,10 @@ class SCIZ:
         #    except Exception as e:
         #        print('execption', e, mbox.get_file(item[0])._file.name)
 
-        print('test baroufle')
+        print('test des mails dans /home/rouletabille/exemples/mails')
+        sg.logger = logging.getLogger('test')
         sg.wk.mailDirPath = '/home/rouletabille/exemples/mails'
+        #sg.wk.nocommit = True;
         #sg.wk.mp.debug = True;
         sg.user = sg.db.session.query(User).get(80117)
         sg.wk.walk()
