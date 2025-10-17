@@ -188,7 +188,7 @@ class MhCaller:
                 metatresor = MetaTresor()
                 metatresor.id, metatresor.nom, metatresor.type = line.split(sep)
                 # Fix the data
-                metatresor.nom = re.sub('\s*:\s*$', '', metatresor.nom)
+                metatresor.nom = re.sub(r'\s*:\s*$', '', metatresor.nom)
                 # Upsert the troll
                 sg.db.upsert(metatresor, session)
         session.commit()

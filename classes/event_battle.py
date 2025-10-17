@@ -344,7 +344,7 @@ class battleEvent(Event):
                 if hasattr(self, 'dla') and self.dla is not None:
                     self.capa_effet += '; DLA ' + self.dla
         if hasattr(self, 'capa_desc') and self.capa_desc is not None:
-            self.capa_desc = re.sub('\s+', ' ', self.capa_desc).strip().capitalize()
+            self.capa_desc = re.sub(r'\s+', ' ', self.capa_desc).strip().capitalize()
             # Fix EA
             if 'aléatoire' in self.capa_desc:
                 self.capa_effet = self.capa_effet.capitalize()
@@ -398,14 +398,14 @@ class battleEvent(Event):
         self.att_id, self.att_nom = self.def_id, self.def_nom
         self.def_id, self.def_nom = tmp_id, tmp_nom
         if hasattr(self, 'capa_dead_desc') and self.capa_dead_desc is not None:
-            self.type = re.sub('\s+', ' ', self.capa_dead_desc).strip()
+            self.type = re.sub(r'\s+', ' ', self.capa_dead_desc).strip()
             self.type = re.sub('la Bénédiction', 'Bénédiction', self.type) # Delete the prefix for Coccicruelle
             if 'substance visqueuse et corrosive' in self.type: # Delete the prefix for Essaim
                 self.type = 'Explosion visqueuse et corrosive'
         if hasattr(self, 'capa_dead_effet') and self.capa_dead_effet is not None:
-            self.capa_effet = re.sub('\s+', ' ', self.capa_dead_effet).strip().capitalize()
+            self.capa_effet = re.sub(r'\s+', ' ', self.capa_dead_effet).strip().capitalize()
         if hasattr(self, 'capa_dead_subdesc') and self.capa_dead_subdesc is not None:
-            self.capa_dead_subdesc = re.sub('\s+', ' ', self.capa_dead_subdesc).strip().capitalize()
+            self.capa_dead_subdesc = re.sub(r'\s+', ' ', self.capa_dead_subdesc).strip().capitalize()
             if not hasattr(self, 'capa_dead_effet') or self.capa_dead_effet is None:
                 self.capa_effet = self.capa_dead_subdesc
             else:
@@ -496,13 +496,13 @@ def upsert_targetted_beings(mapper, connection, target):
     # Beings
     objs = []
     if target.att_id is not None:
-        target.att_nom = re.sub('\s+', ' ', target.att_nom).strip()
+        target.att_nom = re.sub(r'\s+', ' ', target.att_nom).strip()
         objs.append({'id': target.att_id, 'nom': target.att_nom, 'mort': False})
     if target.def_id is not None:
-        target.def_nom = re.sub('\s+', ' ', target.def_nom).strip()
+        target.def_nom = re.sub(r'\s+', ' ', target.def_nom).strip()
         objs.append({'id': target.def_id, 'nom': target.def_nom, 'mort': (target.vie is not None and int(target.vie) <= 0)})
     if target.autre_id is not None:
-        target.autre_nom = re.sub('\s+', ' ', target.autre_nom).strip()
+        target.autre_nom = re.sub(r'\s+', ' ', target.autre_nom).strip()
         objs.append({'id': target.autre_id, 'nom': target.autre_nom, 'mort': False})
     for obj in objs:
         if Being.is_mob(obj['id']):
@@ -512,7 +512,7 @@ def upsert_targetted_beings(mapper, connection, target):
     # Treasure
     if target.tresor_id is not None:
         if target.tresor_nom is not None:
-            target.tresor_nom = re.sub('\s+', ' ', target.tresor_nom).strip()
+            target.tresor_nom = re.sub(r'\s+', ' ', target.tresor_nom).strip()
         tresor = sg.db.session.query(Tresor).get(target.tresor_id)
         if tresor is None:
             tresor = Tresor(id=target.tresor_id)

@@ -156,7 +156,7 @@ class SCIZ:
         #from operator import itemgetter
         #self.mp = MailParser()
         #self.re_time = re.compile('Il était alors (aux alentours de )?: (?P<time>.*)\.')
-        #self.re_vie = re.compile('(reste actuellement|avez maintenant)\s+(?P<vie>\d+)\s+(p|P)oints? de (v|V)ie')
+        #self.re_vie = re.compile(r'(reste actuellement|avez maintenant)\s+(?P<vie>\d+)\s+(p|P)oints? de (v|V)ie')
         #mbox = mailbox.Maildir("/tmp/mail.pb", create=True)
         ## Build a sorted list of key-message by 'Date' header #RFC822
         #sorted_mbox = sorted(mbox.iteritems(), key=lambda x: email.utils.parsedate(x[1].get('Date')))

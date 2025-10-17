@@ -40,17 +40,17 @@ class Being(sg.sqlalchemybase):
         if oid is None or nom is None:
             return '', '', ''
         if int(oid) > 300000:
-            res = re.search('(?s)(((?P<mob_det>une?)\s+)?(?P<mob_nom>.+)\s+\[(?P<mob_age>.+)\]\s*(?P<mob_tag>.+)?)', nom)
+            res = re.search(r'(?s)(((?P<mob_det>une?)\s+)?(?P<mob_nom>.+)\s+\[(?P<mob_age>.+)\]\s*(?P<mob_tag>.+)?)', nom)
             if res is not None:
-                mob_nom = re.sub('\s+', ' ', res.groupdict()['mob_nom']).strip()
-                mob_age = re.sub('\s+', ' ', res.groupdict()['mob_age']).strip()
-                mob_tag = re.sub('\s+', ' ', res.groupdict()['mob_tag']).strip() if res.groupdict()['mob_tag'] is not None else ''
+                mob_nom = re.sub(r'\s+', ' ', res.groupdict()['mob_nom']).strip()
+                mob_age = re.sub(r'\s+', ' ', res.groupdict()['mob_age']).strip()
+                mob_tag = re.sub(r'\s+', ' ', res.groupdict()['mob_tag']).strip() if res.groupdict()['mob_tag'] is not None else ''
                 return mob_nom.strip(), mob_age, mob_tag
         try:
             # str(nom) because we get an integer with nom=100 and re.sub() fails on an integer :(
             # the only professional languages are those with strong typing, including VB.NET :p
             # note that PHP has strong typing for function arguments, return values, class attributes
-            return re.sub('\s+', ' ', str(nom)).strip(), None, None
+            return re.sub(r'\s+', ' ', str(nom)).strip(), None, None
         except Exception as e:
             sg.logger.warning("Unrecognized name '%s' for being %s" % (nom, oid))
         return nom, None, None

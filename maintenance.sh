@@ -8,3 +8,5 @@ else
 fi
 echo $sql >> ${LOGS}
 psql sciz -t <<< $sql >> ${LOGS} 2>&1
+#rappel pour cherche \s
+# grep -r --include=*.py "\\\\s" /sciz
