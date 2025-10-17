@@ -112,7 +112,7 @@ class MailParser:
     def parse(self, subject, body, froms, headers, user):
         if subject is None or body is None:
             return None
-        subject = str(subject).replace('\\r', '').replace('\\n', ' ')
+        subject = str(subject).replace(r'\r', '').replace(r'\n', ' ')
         # Dictionary of dictionaries with the results of the regexp matching
         # The first item has all the regexps matching at least one time
         # The following items are for occurences of regexps matching several times
@@ -132,7 +132,7 @@ class MailParser:
             sg.logger.warning('No regexp matching mail subject \'%s\', aborting...' % subject)
             return None
         sg.logger.info('Found \'%s\', processing...' % (key))
-        # Routine is called based on key, which must be 'CLASS(_\w+)?'
+        # Routine is called based on key, which must be r'CLASS(_\w+)?'
         # formated, for CLASS.build or CLASS.build_\1 to be called.
         # This is probably dangerous behavior but since no people should be
         # allowed to access the .yaml config file without having also access to
