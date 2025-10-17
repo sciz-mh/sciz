@@ -88,6 +88,7 @@ CONF_DB_PORT                    = 'port'
 CONF_DB_NAME                    = 'name'
 CONF_DB_USER                    = 'user'
 CONF_DB_PASS                    = 'passwd'
+CONF_EXECUTEMANY                = 'executemany'
 
 # INSTANCE SECTION
 CONF_INSTANCE_SECTION           = 'instance'

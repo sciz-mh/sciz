@@ -57,6 +57,9 @@ class SqlHelper:
         self.db_name = sg.conf[sg.CONF_DB_SECTION][sg.CONF_DB_NAME]
         self.db_user = sg.conf[sg.CONF_DB_SECTION][sg.CONF_DB_USER]
         self.db_pass = sg.conf[sg.CONF_DB_SECTION][sg.CONF_DB_PASS]
+        self.executemany_mode = sg.conf[sg.CONF_DB_SECTION][sg.CONF_EXECUTEMANY]
+        if self.executemany_mode is None:
+            self.executemany_mode = 'batch' # sqlalchemy version < 2.0
 
     # Init the DB (create the tables)
     def init(self):
@@ -66,7 +69,7 @@ class SqlHelper:
     # Connect to the DB (create it if missing)
     def connect(self, applicationName='scizpy'):
         db_url = 'postgresql+psycopg2://%s:%s@%s:%s/%s' % (self.db_user, self.db_pass, self.db_host, self.db_port, self.db_name)
-        self.engine = create_engine(db_url, encoding=sg.DEFAULT_CHARSET, client_encoding=sg.DEFAULT_CHARSET, pool_size=10, max_overflow=5, executemany_mode='batch', connect_args={"application_name":applicationName})
+        self.engine = create_engine(db_url, encoding=sg.DEFAULT_CHARSET, client_encoding=sg.DEFAULT_CHARSET, pool_size=10, max_overflow=5, executemany_mode=self.executemany_mode, connect_args={"application_name":applicationName})
         if self.db_name is not None and not database_exists(self.engine.url):
             create_database(self.engine.url)
         # Create the session for main querying
