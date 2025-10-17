@@ -69,7 +69,7 @@ class SqlHelper:
     # Connect to the DB (create it if missing)
     def connect(self, applicationName='scizpy'):
         db_url = 'postgresql+psycopg2://%s:%s@%s:%s/%s' % (self.db_user, self.db_pass, self.db_host, self.db_port, self.db_name)
-        self.engine = create_engine(db_url, encoding=sg.DEFAULT_CHARSET, client_encoding=sg.DEFAULT_CHARSET, pool_size=10, max_overflow=5, executemany_mode=self.executemany_mode, connect_args={"application_name":applicationName})
+        self.engine = create_engine(db_url, client_encoding=sg.DEFAULT_CHARSET, pool_size=10, max_overflow=5, executemany_mode=self.executemany_mode, connect_args={"application_name":applicationName})
         if self.db_name is not None and not database_exists(self.engine.url):
             create_database(self.engine.url)
         # Create the session for main querying
