@@ -43,8 +43,9 @@ jwt = JWTManager()
 oauth = OAuth()
 
 # WEBAPP CONFIG
-@webapp.before_first_request
-def configure():
+#@webapp.before_first_request   # deprecated
+#def configure():
+with webapp.app_context():
     # SCIZ startup
     if sg.sciz is None:
         try:
