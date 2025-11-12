@@ -25,8 +25,20 @@
             <v-btn color="primary" depressed href="/api/login" class="ma-1" type="submit" v-if="!isAuthenticated()">Connexion</v-btn>
 		</v-row>
 		<v-row justify="center">
-            <v-chip v-if="show_error" class="ma-2" color="error" text-color="white" @click="show_error = false">
-                Erreur d'authentification MountyHall
+            <v-chip v-if="show_error === '1'" class="ma-2" color="error" text-color="white" @click="show_error = false">
+                Échec à l'authentification MountyHall
+            </v-chip>
+            <v-chip v-else-if="show_error === '2'" class="ma-2" color="error" text-color="white" @click="show_error = false">
+                Erreur interne (exception) à l'authentification MountyHall
+            </v-chip>
+            <v-chip v-else-if="show_error === '3'" class="ma-2" color="error" text-color="white" @click="show_error = false">
+                Erreur interne (pas de token) à l'authentification MountyHall
+            </v-chip>
+            <v-chip v-else-if="show_error === '4'" class="ma-2" color="error" text-color="white" @click="show_error = false">
+                Erreur interne (pas de d'info du joueur) à l'authentification MountyHall
+            </v-chip>
+            <v-chip v-else-if="show_error"  class="ma-2" color="error" text-color="white" @click="show_error = false">
+                Erreur interne inconnue à l'authentification MountyHall
             </v-chip>
 		</v-row>
 	</v-col>

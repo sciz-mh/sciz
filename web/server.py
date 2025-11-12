@@ -155,8 +155,8 @@ def hook_jwt_check(view_function):
 # AUTHENTIFICATION
 @webapp.route('/api/login')
 def login():
-    sg.logger.info("HERE")
     redirect_uri = url_for('authorize', _external=True)
+    sg.logger.info('LOGIN, redirect to %s' % redirect_uri)
     return oauth.mh.authorize_redirect(redirect_uri)
 
 @webapp.route('/api/login/callback')
@@ -166,13 +166,18 @@ def authorize():
     except OAuthError as o:
         sg.logger.exception(o)
         return redirect('/?error=1')
+    except Exception as e:
+        sg.logger.exception(e)
+        return redirect('/?error=2')
     print("test")
     if token is None:
-        return redirect('/?error=1')
+        sg.logger.info("after authorize_access_token, token is none")
+        return redirect('/?error=3')
     userinfo = oauth.mh.userinfo()
     if userinfo is None:
         sg.logger.error('Missing info from MH for logging user: ' + userinfo)
-        return redirect('/?error=1')
+        return redirect('/?error=4')
+    # sg.logger.info("after authorize_access_token, ok")
     # Create all the user in the maisonnee
     ids = list(dict.fromkeys(userinfo['ids'] + [userinfo['sub']]))
     maisonnee_id = sg.db.session.query(Troll.maisonnee_id).filter(Troll.id.in_(ids)).first()[0]
