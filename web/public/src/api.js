@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // DEBUG MODE ONLY
 //export const API_URL = 'http://127.0.0.1:8080/api'
-//export const API_URL = 'https://www.sciz.fr/api'
+//export const API_URL = 'https://sciz.mh.raistlin.fr/api'
 // PRODUCTION MODE ONLY
 export const API_URL = '/api'
 

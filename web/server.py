@@ -31,9 +31,12 @@ from flask_jwt_extended.exceptions import NoAuthorizationError
 from sqlalchemy import func, or_, and_, asc, desc
 from authlib.integrations.flask_client import OAuth
 from authlib.integrations.base_client.errors import OAuthError
+from oauthlib.oauth2 import WebApplicationClient
 import datetime, dateutil.relativedelta, json, math, re, sys, logging, urllib.parse
 import modules.globals as sg
 import traceback
+import requests
+import base64
 
 # WEBAPP DEFINITION
 webapp = Flask('SCIZ', static_folder='./web/dist-public/static', template_folder='./web/dist-public/template')
@@ -153,33 +156,116 @@ def hook_jwt_check(view_function):
 # ROUTES DEFINITION
 
 # AUTHENTIFICATION
-@webapp.route('/api/login')
-def login():
+@webapp.route('/api/login_old')
+def login_old():
     redirect_uri = url_for('authorize', _external=True)
     sg.logger.info('LOGIN, redirect to %s' % redirect_uri)
     return oauth.mh.authorize_redirect(redirect_uri)
 
+@webapp.route('/api/login')
+def login():
+    # ancien : GET https://games.mountyhall.com/mountyhall/libs/oauth2/authorize.php?
+    # response_type=code
+    # client_id=SCIZ
+    # redirect_uri=https://www.sciz.fr/api/login/callback
+    # scope=openid profile
+    # state=VeGNobH8mZ5jUHLUfS1gC9qZ4wz5yq
+    # nonce=vkpbJk8WYDIFbRBH0Lxo
+    
+    # response_type=code
+    # client_id=SCIZ2
+    # redirect_uri=https%3A%2F%2Fsciz.brion.fr%2Fapi%2Fcallback
+    # scope=openid+profile
+    # state=s1
+    client = WebApplicationClient(sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID])
+    authorization_url = 'https://games.mountyhall.com/mountyhall/libs/oauth2/authorize.php'
+    url = client.prepare_request_uri(
+        authorization_url,
+        redirect_uri = 'https://sciz.mh.raistlin.fr/api/login/callback',
+        scope = ['openid', 'profile'],
+        state = 's1',
+        nonce = 'xxx'
+    )
+    return redirect(url)
+
 @webapp.route('/api/login/callback')
 def authorize():
     try:
-        token = oauth.mh.authorize_access_token()
+        client = WebApplicationClient(sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID])
+        client.parse_request_uri_response(request.url, 's1')
+        print("parse_request_uri_response ok")
+        data = client.prepare_request_body(
+            #code = '',
+            #scope = ''
+            redirect_uri = 'https://sciz.mh.raistlin.fr/api/login/callback',
+            #client_id = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID],
+            #client_secret = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SECRET],
+            client_secret = 'jh6789_-"rTY78a%p',
+        )
+        print("prepare_request_body ok2")
+        print(data)
+        token_url = 'https://games.mountyhall.com/mountyhall/libs/oauth2/token.php'
+        headers = {
+            'cache-control': 'no-cache',
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': '*',
+            'accept-encoding': 'gzip, deflate',
+        }
+        response = requests.post(token_url, data=data, headers=headers)
+        print('call token ok')
+        print(response.text)
+        oResponse = json.loads(response.text)
+        # print('oResponse')
+        # print(oResponse)
+        # if oResponse['id_token'] is None:
+        #     print('Pas de id_token')
+        #     return redirect('/?error=2')
+        # t = oResponse['id_token'].split('.')
+        # print('t')
+        # print(t)
+        # payload = t[1]
+        # print('payload')
+        # print(payload)
+        # jsonToken = base64.b64decode(payload + '==')
+        # print('jsonToken')
+        # print(jsonToken)
+        # arrayToken = json.loads(jsonToken)
+        # print('arrayToken')
+        # print(arrayToken)
+        # if arrayToken['sub'] is None:
+        #     print('Pas de ID de troll')
+        #     return redirect('/?error=2')
+        # id_troll = arrayToken['sub']
+        userinfo_url = 'https://games.mountyhall.com/mountyhall/libs/oauth2/userinfo.php'
+        headers = {
+            'cache-control': 'no-cache',
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': '*',
+            'accept-encoding': 'gzip, deflate',
+            'Authorization': 'Bearer ' + oResponse['access_token'],
+        }
+        response = requests.get(userinfo_url, headers=headers)
+        print('userinfo brut')
+        print(response.text)
+        
     except OAuthError as o:
         sg.logger.exception(o)
         return redirect('/?error=1')
     except Exception as e:
         sg.logger.exception(e)
         return redirect('/?error=2')
-    print("test")
-    if token is None:
-        sg.logger.info("after authorize_access_token, token is none")
-        return redirect('/?error=3')
-    userinfo = oauth.mh.userinfo()
-    if userinfo is None:
-        sg.logger.error('Missing info from MH for logging user: ' + userinfo)
-        return redirect('/?error=4')
+    #if token is None:
+    #    sg.logger.info("after authorize_access_token, token is none")
+    #    return redirect('/?error=3')
+    # userinfo = oauth.mh.userinfo()
+    # if userinfo is None:
+    #     sg.logger.error('Missing info from MH for logging user: ' + userinfo)
+    #     return redirect('/?error=4')
     # sg.logger.info("after authorize_access_token, ok")
     # Create all the user in the maisonnee
+    userinfo = json.loads(response.text)
     ids = list(dict.fromkeys(userinfo['ids'] + [userinfo['sub']]))
+    # ids = [id_troll]
     maisonnee_id = sg.db.session.query(Troll.maisonnee_id).filter(Troll.id.in_(ids)).first()[0]
     if maisonnee_id is None:
         maisonnee_id = sg.db.upsert(Maisonnee()).id
