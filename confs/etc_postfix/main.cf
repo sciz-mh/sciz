@@ -1,64 +1,13 @@
-###
-# SCIZ Postfix configuration
-# (Only things not set by default)
-###
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
 
-##
-# General
-##
-# Custom banner (deleted OS version)
-smtpd_banner = $myhostname ESMTP $mail_name
-# No local notification to unix users (they do not exist anyway)
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
 biff = no
-# No readme directory, useless to us
-readme_directory = no
-# No backward compatibility
-compatibility_level=2
 
-##
-# Network 
-##
-# Hostname infos
-myhostname = mail.sciz.fr
-mydomain = sciz.fr
-# Listening intefaces and protocols 
-inet_interfaces = all
-inet_protocols = all
-# Internal privileged clients (DO NOT CHANGE OR YOU WILL CREATE AN OPEN RELAY)
-mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
-# Routes
-mydestination = localhost.$mydomain, localhost.$myhostname, localhost, localhost.localdomain
-relayhost = 
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
 
-##
-# TLS
-##
-tls_random_source=dev:/dev/urandom
-smtpd_use_tls=yes
-smtpd_tls_auth_only=yes
-smtpd_tls_security_level = may
-smtp_tls_security_level = may
-smtp_tls_note_starttls_offer = yes
-# Certs
-smtpd_tls_cert_file=/etc/letsencrypt/live/sciz.fr/fullchain.pem
-smtpd_tls_key_file=/etc/letsencrypt/live/sciz.fr/privkey.pem
-# Cache
-smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
-smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
-# Ciphersuites
-smtpd_tls_protocols = TLSv1.3, TLSv1.2, TLSv1.1, !TLSv1, !SSLv2, !SSLv3
-smtp_tls_protocols = TLSV1.3, TLSv1.2, TLSv1.1, !TLSv1, !SSLv2, !SSLv3
-smtp_tls_ciphers = high
-smtpd_tls_ciphers = high
-smtpd_tls_mandatory_protocols = TLSv1.3, TLSv1.2, TLSv1.1, !TLSv1, !SSLv2, !SSLv3
-smtp_tls_mandatory_protocols = TLSv1.3, TLSv1.2, TLSv1.1, !TLSv1, !SSLv2, !SSLv3
-smtp_tls_mandatory_ciphers = high
-smtpd_tls_mandatory_ciphers = high
-smtpd_tls_mandatory_exclude_ciphers = MD5, DES, ADH, RC4, PSD, SRP, 3DES, eNULL, aNULL
-smtpd_tls_exclude_ciphers = MD5, DES, ADH, RC4, PSD, SRP, 3DES, eNULL, aNULL
-smtp_tls_mandatory_exclude_ciphers = MD5, DES, ADH, RC4, PSD, SRP, 3DES, eNULL, aNULL
-smtp_tls_exclude_ciphers = MD5, DES, ADH, RC4, PSD, SRP, 3DES, eNULL, aNULL
-tls_preempt_cipherlist = yes
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
 
 ##
 # Mail
@@ -72,17 +21,21 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 # Any aliases that are supported by this system
 virtual_alias_maps = pgsql:/etc/postfix/pgsql/virtual_alias_maps.cf
-# Add handling of adresses extension
-recipient_delimiter = +
 # The list of all virtual domains serviced by this instance of postfix
-virtual_mailbox_domains = $mydomain
+virtual_mailbox_domains = sciz.brion.fr, sciz.fr
 # Look up the mailbox location based on the email address received, result must end with a '/' to be a maildir
 virtual_mailbox_maps = pgsql:/etc/postfix/pgsql/virtual_mailbox_maps.cf
 # Mailbox base must exists and be writable by the uid/gid used to write the received mails
 # Here the static uid/gid used are those of the netphish user
 virtual_mailbox_base = /var/mail/vhosts/
-virtual_uid_maps = static:1000
-virtual_gid_maps = static:1000
+virtual_uid_maps = static:1002
+virtual_gid_maps = static:1002
+
+mydestination = $myhostname, localhost.$mydomain, localhost
+relayhost = 
+mynetworks = all
+inet_interfaces = all
+recipient_delimiter = +
 
 ##
 # Additionnal security configuration
@@ -105,10 +58,5 @@ smtpd_hard_error_limit = 20
 ##
 header_checks = regexp:/etc/postfix/header_checks
 
-##
-# opendkim configuration
-##
-milter_default_action = accept
-milter_protocol = 2
-smtpd_milters = inet:localhost:8888
-non_smtpd_milters = inet:localhost:8888
+compatibility_level = 3.6
+

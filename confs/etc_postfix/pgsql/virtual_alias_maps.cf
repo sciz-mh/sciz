@@ -3,7 +3,7 @@
 # Tells postfix where to find aliases 
 ###
 user            = sciz
-password        = eZ6Ukqzlx6qF7PQbbtVb
+password        = xxx
 dbname          = sciz
-hosts           = localhost
-query           = SELECT mail FROM public.user WHERE mail='%u@%d' LIMIT 1;
+hosts           = sql_sciz
+query           = SELECT mail FROM sciz.user WHERE mail='%u@%d' or mail='%u@sciz.fr' LIMIT 1;
