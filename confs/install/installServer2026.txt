@@ -1,0 +1,224 @@
+SCIZ install Trixie 2025
+Changement de port SSH : créer /etc/ssh/sshd_config.d/1000-port.conf, mettre Port xxx et systemctl restart ssh
+Changement de timezone :  dpkg-reconfigure tzdata
+bloquer la cnx root avec mot de passe : passwd -l root
+
+À ajouter au fichier :etc/host
+10.0.236.98 sql_sciz
+
+pour utiliser scp
+scp -P 6933 -i /home/rouletabille/.ssh/id_2025 rouletabille@sciz.fr:$1 $2
+(voir id_2025 dans alain\cert)
+
+#user sciz
+adduser sciz
+usermod -a -G sciz rouletabille
+
+apt-get install fail2ban
+apt-get install git
+apt-get install supervisor
+##### pas de module libnginx-mod-http-passenger !
+apt-get install python3-sqlalchemy
+apt-get install python3-sqlalchemy-utils
+
+# install repo GIT : en se mettant sur /
+git clone https://github.com/sciz-mh/sciz.git
+
+# recup conf
+scp -P 6933 -i /home/rouletabille/.ssh/id_2025 rouletabille@sciz.fr:/sciz/confs/sciz_main.yaml /sciz/confs/sciz_main.yaml
+# corriger le nom du serveur DB, le mot de passe DB et les paramètres mails (à revérifier)
+
+apt install python3-unidecode
+apt install python3-flask
+apt install python3-flask-cors
+apt install python3-python-flask-jwt-extended
+apt install python3-authlib
+apt install watchdog
+apt install python3-watchdog
+apt install python3-psycopg2
+apt install postfix-pgsql
+apt install postgresql-client-17
+
+##### apache + certbot + passanger
+
+#apt-get install nginx # conf ngnx  passenger pas supportée sur debian 13.1 => bascule sur apache
+#apt-get install python3-certbot-nginx
+apt-get install passenger
+apt install apache2
+apt install libapache2-mod-passenger
+apt install python3-certbot-apache
+
+# outils pour tests de l'install (pour faire tourner "sudo /usr/bin/passenger-config validate-install"
+apt install apache2-dev
+apt install python3-requests-oauthlib
+
+# reprise début 2026
+apt install unattended-upgrades
+apt install needrestart
+apt install python3-joserfc (pour tests mais ne résout par le pb de oAuth2)
+
+
+
+# postfix et mails
+postconf compatibility_level=3.6 **(suivi de "postfix reload")
+mkdir /var/spool/mail/vhosts
+chown sciz:sciz /var/spool/mail/vhosts
+chmod 2351 /var/spool/mail/vhosts **(doit donner d-wxr-s--x)
+
+#/etc/postfix/main.cnf qui fonctionne
+###########################################
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+# Any aliases that are supported by this system
+virtual_alias_maps = pgsql:/etc/postfix/pgsql/virtual_alias_maps.cf
+# Look up the mailbox location based on the email address received, result must end with a '/' to be a maildir
+virtual_mailbox_maps = pgsql:/etc/postfix/pgsql/virtual_mailbox_maps.cf
+mydestination = $myhostname, localhost.$mydomain, localhost, sciz.brion.fr
+relayhost =
+mynetworks = all
+inet_interfaces = all
+recipient_delimiter = +
+##
+# Filter out anything that is not mountyhall related
+##
+header_checks = regexp:/etc/postfix/header_checks
+
+compatibility_level = 3.6
+###########################################
+créer les fichiers
+#############################
+/etc/postfix/pgsql/virtual_alias_maps.cf
+#############################
+###
+# SCIZ Postfix configuration
+# Tells postfix where to find aliases
+###
+user            = sciz
+password        = xxx
+dbname          = sciz
+hosts           = sql_sciz
+query           = SELECT mail FROM sciz.user WHERE mail='%u@%d' or mail='%u@sciz.fr' LIMIT 1;
+#############################
+/etc/postfix/pgsql/virtual_mailbox_maps.cf
+#############################
+###
+# SCIZ Postfix configuration
+# Tells postfix how to find a user Maildir/
+###
+user            = sciz
+password        = xxx
+dbname          = sciz
+hosts           = sql_sciz
+query           = SELECT mail || '/' FROM sciz.user WHERE mail='%u@%d' or mail='%u@sciz.fr'  LIMIT 1;
+#############################
+/etc/postfix/header_checks
+#############################
+if /^Subject:/
+/^Subject:.*(\[MountyHall\]|W01vdW50eUhhbGxd)/ PASS because MountyHall
+/^Subject:.*(Gmail|GMAIL|gmail)/ PASS because Gmail code
+/^Subject:.*(Proton|PROTON|proton)/ PASS because may be proton validation
+!/^Subject:.*(\[MountyHall\]|W01vdW50eUhhbGxd)/ DISCARD because not MountyHall
+endif
+
+#############################
+install outils pour build vue.js
+#############################
+apt install npm (trèèèèès long)
+npm install -g npm
+npm install -g yarn
+(le build se fait en lançant "npm run build" dans /sciz/web/public)
+
+
+#############################
+# SQL
+#############################
+# commande de backup de l'ancienne base
+sudo -u sciz pg_dump -F c -c --quote-all-identifiers -f /tmp/sciz.dbsave -Z 9
+# copie
+#scp -P 6933 -i /home/rouletabille/.ssh/id_2025 rouletabille@sciz.fr:/tmp/sciz.gz /tmp/sciz.gz
+#mkdir /tmp/sciz.d
+#scp -P 6933 -i /home/rouletabille/.ssh/id_2025 rouletabille@sciz.fr:/tmp/sciz.d/* /tmp/sciz.d
+scp -P 6933 -i /home/rouletabille/.ssh/id_2025 rouletabille@sciz.fr:/tmp/sciz.dbsave /tmp/sciz.dbsave
+# commande de restore de la base
+##gunzip -c /tmp/sciz.gz|sed "s/pg_catalog.set_config('search_path', ''/pg_catalog.set_config('search_path', 'sciz'/"|psql --host=sql_sciz --username=sciz_admin sciz
+#gunzip -c /tmp/sciz.gz|psql --host=sql_sciz --username=sciz_admin sciz
+#pg_restore --host=sql_sciz --username=sciz_admin -Fc -j 4 /tmp/sciz.dbsave
+pg_restore --host=sql_sciz --username=sciz_admin -c -j 4 -d sciz --no-owner --no-privileges --if-exists --no-data-for-failed-tables --no-privileges --transaction-size=10000 sciz.dbsave 2>&1 |tee restore.out
+# passer en schema sciz
+ALTER SCHEMA public RENAME TO sciz;
+create schema public;
+
+# param postgreSQL base sciz
+alter database sciz SET synchronous_commit TO off;
+alter user sciz set search_path to sciz;
+alter user sciz_admin set search_path to sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.being_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.being_mob_meta_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.capa_meta_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.champi_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.coterie_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.event_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.guilde_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.hook_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.lieu_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.maisonnee_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.tresor_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.tresor_meta_id_seq TO sciz;
+GRANT SELECT, USAGE ON SEQUENCE sciz.user_partage_id_seq TO sciz;
+
+
+
+
+
+
+
+# ceci est peut-être over-kill. Pas refait en oct 2025
+apt-get install nginx-extras
+apt-get install python-is-python3 2to3
+
+apt-get install -y dirmngr gnupg apt-transport-https ca-certificates curl
+# utilisation du relai chez Roule pour l'install passenger, dans fichier hosts, mettre 2a01:239:22c:6f00::1:4 oss-binaries.phusionpassenger.com
+sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger bookworm main > /etc/apt/sources.list.d/passenger.list'
+curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/phusion.gpg >/dev/null
+sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger bookworm main > /etc/apt/sources.list.d/passenger.list'
+apt-get update
+if [ ! -f /etc/nginx/modules-enabled/50-mod-http-passenger.conf ]; then ln -s /usr/share/nginx/modules-available/mod-http-passenger.load /etc/nginx/modules-enabled/50-mod-http-passenger.conf ; fi
+ls /etc/nginx/conf.d/mod-http-passenger.conf
+
+# Install Passenger + Nginx module
+apt-get install -y libnginx-mod-http-passenger
+apt-get install python3-yaml
+apt-get install python3-flask-sqlalchemy
+apt-get install python3-python-flask-jwt-extended
+apt-get install python3-bcrypt
+apt-get install python3-dateutil (inclus dans un package précédent)
+apt-get install python3-requests (inclus dans un package précédent)
+apt-get install python3-discord
+apt-get install mailutils (pour la commande mail)
+
+# télécharger python3-authlib_1.6.0-1_all.deb (la version de bookworm a un bug)
+apt install ./python3-authlib_1.6.0-1_all.deb
+
+#apt-get install psycopg2-binary (non trouvé)
+#apt-get install flask-restplus (non trouvé) => python3-flask-restful ?
+apt install python3-flask-restful
+#apt install python3-twitter sans doute inutile
+#apt install python3-google-auth-httplib2 sans doute inutile
+
+apt install opendkim
+
+#L'utilisation de python 2to3 sur le code échoue. Le code était déjà V3 !
+
+
+# postfix

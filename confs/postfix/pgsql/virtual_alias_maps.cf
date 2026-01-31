@@ -1,0 +1,9 @@
+###
+# SCIZ Postfix configuration
+# Tells postfix where to find aliases 
+###
+user            = sciz
+password        = eZ6Ukqzlx6qF7PQbbtVb
+dbname          = sciz
+hosts           = localhost
+query           = SELECT mail FROM public.user WHERE mail='%u@%d' LIMIT 1;
