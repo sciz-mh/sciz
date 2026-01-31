@@ -24,8 +24,9 @@ apt-get install python3-sqlalchemy-utils
 # install repo GIT : en se mettant sur /
 git clone https://github.com/sciz-mh/sciz.git
 
-# recup conf
+# recup conf avec secrets
 scp -P 6933 -i /home/rouletabille/.ssh/id_2025 rouletabille@sciz.fr:/sciz/confs/sciz_main.yaml /sciz/confs/sciz_main.yaml
+scp -P 6933 -i /home/rouletabille/.ssh/id_2025 rouletabille@sciz.fr:/sciz/bots/discord/sciz_discord.yaml /sciz/bots/discord/sciz_discord.yaml
 # corriger le nom du serveur DB, le mot de passe DB et les paramètres mails (à revérifier)
 
 apt install python3-unidecode
@@ -56,7 +57,10 @@ apt install python3-requests-oauthlib
 apt install unattended-upgrades
 apt install needrestart
 apt install python3-joserfc (pour tests mais ne résout par le pb de oAuth2)
-
+apt install python3-aiohttp (necessaire pour le hook discord)
+apt install python3-redis (necessaire pour le hook discord)
+apt install python3-discord (necessaire pour le hook discord)
+apt install redis (necessaire pour le hook discord)
 
 
 # postfix et mails
@@ -177,12 +181,17 @@ GRANT SELECT, USAGE ON SEQUENCE sciz.tresor_id_seq TO sciz;
 GRANT SELECT, USAGE ON SEQUENCE sciz.tresor_meta_id_seq TO sciz;
 GRANT SELECT, USAGE ON SEQUENCE sciz.user_partage_id_seq TO sciz;
 
+#############################
+# supervisor
+#############################
+installation par recopie des fichiers de /etc/supervisor/conf.d
 
 
 
 
 
-
+#############################
+#############################
 # ceci est peut-être over-kill. Pas refait en oct 2025
 apt-get install nginx-extras
 apt-get install python-is-python3 2to3
