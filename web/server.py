@@ -50,40 +50,43 @@ oauth = OAuth()
 #def configure():
 with webapp.app_context():
     # SCIZ startup
-    if sg.sciz is None:
-        try:
-            from sciz import SCIZ
-            sciz = SCIZ('confs/sciz_main.yaml', 'INFO')
-            sg.logger.info('The bats woke up!')
-            sg.logger.info('Starting the web server...')
-            sg.logger = logging.getLogger('server')
-        except Exception as e:
-            print('The bats went sick. Check the log file?', file=sys.stderr)
-            if sg.logger is not None:
-                sg.logger.exception(e)
-            else:
-                traceback.print_exc()
-            sys.exit(1)
-    # Setup
-    webapp.config['SECRET_KEY'] = sg.conf[sg.CONF_WEB_SECTION][sg.CONF_WEB_SECRET]
-    webapp.config['JWT_SECRET_KEY'] = sg.conf[sg.CONF_WEB_SECTION][sg.CONF_WEB_SECRET]
-    webapp.config['JWT_TOKEN_LOCATION'] = 'headers'
-    webapp.config['JWT_HEADER_NAME'] = 'Authorization'
-    webapp.config['JWT_HEADER_TYPE'] = ''
-    webapp.config['JWT_IDENTITY_CLAIM'] = 'identity'
-    webapp.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    webapp.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    webapp.config['SESSION_COOKIE_NAME'] = 'session'
-    webapp.config['SESSION_COOKIE_SECURE'] = True
-    jwt.init_app(webapp)
-    oauth.init_app(webapp)
-    oauth.register(
-        name = 'mh',
-        server_metadata_url = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_SERVER_METADATA_URL],
-        client_id = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID],
-        client_secret = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SECRET],
-        client_kwargs = {'scope': sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SCOPE]}
-    )
+
+    # on passe ici pour les scripts qui n'ont rien à voir avec le WEB. On exclut les scripts lancés avec sciz.py
+    if ('sciz.py' not in sys.argv[0]):
+        if (sg.sciz is None):
+            try:
+                from sciz import SCIZ
+                sciz = SCIZ('confs/sciz_main.yaml', 'INFO')
+                sg.logger.info('The bats woke up!')
+                sg.logger.info('Starting the web server from %s in server.py...', sys.argv[0])
+                sg.logger = logging.getLogger('server')
+            except Exception as e:
+                print('The bats went sick. Check the log file?', file=sys.stderr)
+                if sg.logger is not None:
+                    sg.logger.exception(e)
+                else:
+                    traceback.print_exc()
+                sys.exit(1)
+        # Setup
+        webapp.config['SECRET_KEY'] = sg.conf[sg.CONF_WEB_SECTION][sg.CONF_WEB_SECRET]
+        webapp.config['JWT_SECRET_KEY'] = sg.conf[sg.CONF_WEB_SECTION][sg.CONF_WEB_SECRET]
+        webapp.config['JWT_TOKEN_LOCATION'] = 'headers'
+        webapp.config['JWT_HEADER_NAME'] = 'Authorization'
+        webapp.config['JWT_HEADER_TYPE'] = ''
+        webapp.config['JWT_IDENTITY_CLAIM'] = 'identity'
+        webapp.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        webapp.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+        webapp.config['SESSION_COOKIE_NAME'] = 'session'
+        webapp.config['SESSION_COOKIE_SECURE'] = True
+        jwt.init_app(webapp)
+        oauth.init_app(webapp)
+        oauth.register(
+            name = 'mh',
+            server_metadata_url = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_SERVER_METADATA_URL],
+            client_id = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID],
+            client_secret = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SECRET],
+            client_kwargs = {'scope': sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SCOPE]}
+        )
 
 @webapp.errorhandler(500)
 def internal_error(error):
@@ -193,7 +196,7 @@ def authorize():
     try:
         client = WebApplicationClient(sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID])
         client.parse_request_uri_response(request.url, 's1')
-        print("parse_request_uri_response ok")
+        #print("parse_request_uri_response ok")
         data = client.prepare_request_body(
             #code = '',
             #scope = ''
@@ -202,8 +205,8 @@ def authorize():
             #client_secret = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SECRET],
             client_secret = 'jh6789_-"rTY78a%p',
         )
-        print("prepare_request_body ok2")
-        print(data)
+        #print("prepare_request_body ok2")
+        #print(data)
         token_url = 'https://games.mountyhall.com/mountyhall/libs/oauth2/token.php'
         headers = {
             'cache-control': 'no-cache',
@@ -212,8 +215,8 @@ def authorize():
             'accept-encoding': 'gzip, deflate',
         }
         response = requests.post(token_url, data=data, headers=headers)
-        print('call token ok')
-        print(response.text)
+        #print('call token ok')
+        #print(response.text)
         oResponse = json.loads(response.text)
         # print('oResponse')
         # print(oResponse)
@@ -245,8 +248,8 @@ def authorize():
             'Authorization': 'Bearer ' + oResponse['access_token'],
         }
         response = requests.get(userinfo_url, headers=headers)
-        print('userinfo brut')
-        print(response.text)
+        #print('userinfo brut')
+        #print(response.text)
         
     except OAuthError as o:
         sg.logger.exception(o)
@@ -278,6 +281,7 @@ def authorize():
     # Update the current user
     user = sg.db.session.query(User).get(_id)
     user.troll.nom = userinfo['nom']
+    print('oAuth2 ok for ' + user.troll.nom + ' ' + str(_id))
     user.troll.niv = userinfo['niveau']
     user.troll.race = userinfo['race']
     if userinfo['blason'].startswith('/MH_Blasons/'):

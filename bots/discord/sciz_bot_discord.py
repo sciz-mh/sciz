@@ -23,6 +23,12 @@ CONF_REDIS_HOST = 'host'
 CONF_REDIS_PORT = 'port'
 CONF_REDIS_DB = 'db'
 
+class ScizBot(Bot):
+    async def setup_hook(self):
+        self.sciz_task = asyncio.create_task(
+            _sciz_fetch_events(SCIZ_URL_EVENTS, SCIZ_INTERVAL)
+        )
+
 # MAIN
 if __name__ == '__main__':
     # load config
@@ -40,7 +46,14 @@ if __name__ == '__main__':
 
     # Create the bot
     #bot = Bot(command_prefix=DISCORD_PREFIX, intents=Intents.all())
-    bot = Bot(command_prefix=conf_discord[CONF_DISCORD_PREFIX])
+    #bot = Bot(command_prefix=conf_discord[CONF_DISCORD_PREFIX])
+    intents = Intents.default()
+    intents.message_content = True
+
+    bot = ScizBot(
+        command_prefix=conf_discord[CONF_DISCORD_PREFIX],
+        intents=intents
+    )
 
     # Define bot events
     @bot.event
@@ -148,7 +161,7 @@ if __name__ == '__main__':
                 pass
 
     # Start the bot
-    task = bot.loop.create_task(_sciz_fetch_events(SCIZ_URL_EVENTS, SCIZ_INTERVAL))
+    #task = bot.loop.create_task(_sciz_fetch_events(SCIZ_URL_EVENTS, SCIZ_INTERVAL))
     try:
         bot.run(conf_discord[CONF_DISCORD_TOKEN])
     except Exception as e:
@@ -156,5 +169,5 @@ if __name__ == '__main__':
         print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' crash', file=sys.stderr)
         print(e, file=sys.stderr, flush=True)
         print(e, flush=True)
-        task.cancel()
+        #task.cancel()
 

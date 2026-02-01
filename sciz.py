@@ -26,6 +26,9 @@ class SCIZ:
 
     # Constructor
     def __init__(self, conf_file, logging_level):
+        if (hasattr(sg, 'initDone')):
+            sg.logger = logging.getLogger('sciz')
+            return
 
         # Load the default conf
         with codecs.open(conf_file, 'r', sg.DEFAULT_CHARSET) as fp:
@@ -64,8 +67,8 @@ class SCIZ:
             logger = logging.getLogger(logger_name)
             logger.setLevel(logging_level)
             logger.addHandler(log_file)
+            print('init class SCIZ add ' + file + ' a logger ' + logger_name)
         sg.logger = logging.getLogger('sciz')
-
         # Set up the database connection and store it globally
         try:
             sg.db = SqlHelper('sciz' + sys.argv[1])
@@ -87,6 +90,8 @@ class SCIZ:
         # Set up the mh caller and store it globally
         print('init MhCaller')
         sg.mc = MhCaller()
+        
+        sg.initDone = True
 
     # Test
     def test(self):
@@ -230,6 +235,7 @@ if __name__ == '__main__':
 
     parser.add_argument('rargs', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
     args = parser.parse_args()
+    #sg.logger.info('apres args')
 
     # SCIZ startup
     sg.sciz = None
@@ -255,7 +261,7 @@ if __name__ == '__main__':
             sg.logger = logging.getLogger('updater')
             sg.ah.update(args.rargs)
         elif args.server is not None:
-            sg.logger.info('Starting the web server...')
+            sg.logger.info('Starting the web server from sciz.py...')
             sg.logger = logging.getLogger('server')
             web_port = sg.conf[sg.CONF_WEB_SECTION][sg.CONF_WEB_PORT]
             web_domain = sg.conf[sg.CONF_WEB_SECTION][sg.CONF_WEB_DOMAIN]

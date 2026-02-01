@@ -40,13 +40,17 @@ class MailWalker:
         dir_path = self.mailDirPath + os.sep + user.mail + os.sep + subdir + os.sep
         ago = datetime.datetime.now() - datetime.timedelta(minutes=self.mailMaxRetention)
         try:
+            n = 0
             for f in os.listdir(dir_path):
                 last_modified_date = datetime.datetime.fromtimestamp(os.path.getmtime(dir_path + os.sep + f))
                 if last_modified_date < ago:
                     os.remove(dir_path + os.sep + f)
+                    n += 1
         except (OSError, IOError) as e:
             # sg.logger.warning('Fail to purge \'%s\' mail directory! Error: %s' % (dir_path, e))
             pass
+        if (n > 0):
+            sg.logger.info('deleted %d mail(s) dans %s pour %s (%d)', n, subdir, user.nom, user.id)
 
     # Walker routine
     def walk(self):
