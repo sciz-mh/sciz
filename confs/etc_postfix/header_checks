@@ -1,6 +1,0 @@
-if /^Subject:/
-/^Subject:.*(\[MountyHall\]|W01vdW50eUhhbGxd)/ PASS because MountyHall
-/^Subject:.*(Gmail|GMAIL|gmail)/ PASS because Gmail code
-/^Subject:.*(Proton|PROTON|proton)/ PASS beaause may be proton validation
-!/^Subject:.*(\[MountyHall\]|W01vdW50eUhhbGxd)/ DISCARD because not MountyHall
-endif

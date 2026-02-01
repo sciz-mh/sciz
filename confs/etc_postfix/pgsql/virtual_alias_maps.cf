@@ -1,9 +1,0 @@
-###
-# SCIZ Postfix configuration
-# Tells postfix where to find aliases 
-###
-user            = sciz
-password        = xxx
-dbname          = sciz
-hosts           = sql_sciz
-query           = SELECT mail FROM sciz.user WHERE mail='%u@%d' or mail='%u@sciz.fr' LIMIT 1;
