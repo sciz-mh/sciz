@@ -144,8 +144,10 @@ def hook_jwt_check(view_function):
     @jwt_required()
     def wrapper(*args, **kwargs):
         jwt_data = _decode_jwt_from_request(locations='headers', fresh=False)[0]
+        print('hook_jwt_check.wrapper lg jwt=' + len(str(jwt_data)))
         try:
             authorized = jwt_data['hook_type'] == 'HOOK'
+            print('essai1 hooy_type=' + jwt_data['hook_type'])
         except:
             # Backward compatibility with OLD SCIZ version
             authorized = jwt_data['user_claims']['hook_type'] == 'HOOK'

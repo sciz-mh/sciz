@@ -201,3 +201,9 @@ typings/
 # config
 sciz_discord.yaml
 sciz_main.yaml
+
+# git repo
+git/
+
+# conf exploitation
+confs/exploitation/

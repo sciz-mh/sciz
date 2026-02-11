@@ -42,7 +42,7 @@ class Requester:
 
     # Request
     def request(self, coterie_or_user, search):
-        return ['Une chauve-souris hors-service revient vers vous...']
+        #return ['Une chauve-souris hors-service revient vers vous...']
         search = search.lower()
         # Special coterie handling
         if '%coterie' in search:

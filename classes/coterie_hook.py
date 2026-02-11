@@ -44,6 +44,8 @@ class Hook(sg.sqlalchemybase):
     last_event_id = Column(Integer, ForeignKey('event.id', ondelete='SET NULL'))
     # JSON format
     format = Column(JSON)
+    # channel_id
+    channel_id = Column(String(30), nullable=True)
 
     # Associations
     coterie = relationship('Coterie', back_populates='hooks', primaryjoin='Hook.coterie_id == Coterie.id')

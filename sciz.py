@@ -9,6 +9,7 @@ from modules.requester import Requester
 from modules.sql_helper import SqlHelper
 from modules.notifier import Notifier
 from modules.mh_caller import MhCaller
+from modules.discord import Discord
 from classes.user import User
 from classes.lieu_portail import Portail
 from classes.lieu_piege import Piege
@@ -19,6 +20,7 @@ from modules.mail_helper import MailHelper
 import email, mailbox, datetime
 import sys, os, argparse, codecs, logging, traceback, yaml, re
 import modules.globals as sg
+from sqlalchemy import sql
 
 
 # CLASS DEFINITION
@@ -58,7 +60,7 @@ class SCIZ:
         files = [('sciz', logger_file)]
         res = re.search(r'(.+)\.log', logger_file)
         if res is not None:
-            for logger_name in ['walker', 'updater', 'server', 'cleaner', 'test']:
+            for logger_name in ['walker', 'updater', 'server', 'cleaner', 'test', 'discord']:
                 files.append((logger_name, res.group(1) + '_' + logger_name + '.log'))
         for logger_name, file in files:
             log_file = RotatingFileHandler(file, 'a', logger_file_max_size, 1)
@@ -175,15 +177,20 @@ class SCIZ:
         #    except Exception as e:
         #        print('execption', e, mbox.get_file(item[0])._file.name)
 
-        print('test des mails dans /home/rouletabille/exemples/mails')
-        sg.logger = logging.getLogger('test')
-        sg.wk.mailDirPath = '/home/rouletabille/exemples/mails'
-        #sg.wk.nocommit = True;
-        #sg.wk.mp.debug = True;
-        sg.user = sg.db.session.query(User).get(80117)
-        sg.wk.walk()
-        sg.user = sg.db.session.query(User).get(91305)
-        sg.wk.walk()
+        #print('test des mails dans /home/rouletabille/exemples/mails')
+        #sg.logger = logging.getLogger('test')
+        #sg.wk.mailDirPath = '/home/rouletabille/exemples/mails'
+        ##sg.wk.nocommit = True;
+        ##sg.wk.mp.debug = True;
+        #sg.user = sg.db.session.query(User).get(80117)
+        #sg.wk.walk()
+        #sg.user = sg.db.session.query(User).get(91305)
+        #sg.wk.walk()
+
+        sql1 = "select * from sciz.hook where channel_id=:id"
+        a = {'id':'1'}
+        sg.db.session.execute(sql.text(sql1), a)
+        #sg.db.session.execute(sql1, a)
 
         print('end of test')
         pass
@@ -229,6 +236,10 @@ if __name__ == '__main__':
             nargs='?', const=True, default=None,
             help='instruct SCIZ to start the vacuum cleaner')
 
+    group.add_argument('-d', '--discord',
+            nargs='?', const=True, default=None,
+            help='instruct SCIZ to start the discord bot')
+
     group.add_argument('-t', '--test',
             action='store_true',
             help='do a test you wrote')
@@ -270,6 +281,11 @@ if __name__ == '__main__':
             sg.logger.info('Starting the vacuum cleaner...')
             sg.logger = logging.getLogger('cleaner')
             sg.ah.vacuum()
+        elif args.discord is not None:
+            sg.logger.info('Starting the discord bot...')
+            sg.logger = logging.getLogger('discord')
+            discord = Discord()
+            discord.run()
         elif args.test is not None:
             sg.logger.info('Testing SCIZ...')
             sg.sciz.test()
