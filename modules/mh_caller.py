@@ -123,14 +123,20 @@ class MhCaller:
         existing = [str(r.id) for r in sg.db.session.query(Being.id).filter(Being.id.in_([troll.id for troll in trolls])).all()]
         to_insert = [troll for troll in trolls if str(troll.id) not in existing]
         if len(to_insert) > 0:
-            sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=troll.id, nom=troll.nom, type='Trõll')) for troll in to_insert])
+            #sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=troll.id, nom=troll.nom, type='Trõll')) for troll in to_insert])
+            with sg.db.engine.begin() as conn2:
+                conn2.execute(Being.__table__.insert(), [sg.row2dict(Being(id=troll.id, nom=troll.nom, type='Trõll')) for troll in to_insert])
+                conn2.commit()
         # insert troll (as of june 2025, there are troll present in being but not in being_troll, so we have to build another to_insert)
         existing = [str(r.id) for r in sg.db.session.query(Troll.id).filter(Troll.id.in_([troll.id for troll in trolls])).all()]
         to_insert = [troll for troll in trolls if str(troll.id) not in existing]
         to_update = [troll for troll in trolls if str(troll.id) in existing]
         # Bulk insert new objects
         if len(to_insert) > 0:
-            sg.db.engine.execute(Troll.__table__.insert(), [sg.row2dict(troll) for troll in to_insert])
+            #sg.db.engine.execute(Troll.__table__.insert(), [sg.row2dict(troll) for troll in to_insert])
+            with sg.db.engine.begin() as conn2:
+                conn2.execute(Troll.__table__.insert(), [sg.row2dict(troll) for troll in to_insert])
+                conn2.commit()
         # Bulk update old objects
         if len(to_update) > 0:
             session = sg.db.new_session()
@@ -472,10 +478,19 @@ class MhCaller:
                     # Bulk insert new objects
                     if len(to_insert) > 0:
                         if cls is Troll:
-                            sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=obj.id, type='Trõll')) for obj in to_insert])
+                            #sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=obj.id, type='Trõll')) for obj in to_insert])
+                            with sg.db.engine.begin() as conn2:
+                                conn2.execute(Being.__table__.insert(), [sg.row2dict(Being(id=obj.id, type='Trõll')) for obj in to_insert])
+                                conn2.commit()
                         if cls is Mob:
-                            sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=obj.id, nom=obj.nom, type='Monstre')) for obj in to_insert])
-                        sg.db.engine.execute(cls.__table__.insert(), [sg.row2dict(obj) for obj in to_insert])
+                            #sg.db.engine.execute(Being.__table__.insert(), [sg.row2dict(Being(id=obj.id, nom=obj.nom, type='Monstre')) for obj in to_insert])
+                            with sg.db.engine.begin() as conn2:
+                                conn2.execute(Being.__table__.insert(), [sg.row2dict(Being(id=obj.id, nom=obj.nom, type='Monstre')) for obj in to_insert])
+                                conn2.commit()
+                        #sg.db.engine.execute(cls.__table__.insert(), [sg.row2dict(obj) for obj in to_insert])
+                        with sg.db.engine.begin() as conn2:
+                            conn2.execute(cls.__table__.insert(), [sg.row2dict(obj) for obj in to_insert])
+                            conn2.commit()
                     # Bulk update old objects
                     if len(to_update) > 0:
                         session = sg.db.new_session()
@@ -622,7 +637,10 @@ class MhCaller:
         to_update = [guilde for guilde in guildes if str(guilde.id) in existing]
         # Bulk insert new objects
         if len(to_insert) > 0:
-            sg.db.engine.execute(Guilde.__table__.insert(), [sg.row2dict(guilde) for guilde in to_insert])
+            #sg.db.engine.execute(Guilde.__table__.insert(), [sg.row2dict(guilde) for guilde in to_insert])
+            with sg.db.engine.begin() as conn2:
+                conn2.execute(Guilde.__table__.insert(), [sg.row2dict(guilde) for guilde in to_insert])
+                conn2.commit()
         # Bulk update old objects
         if len(to_update) > 0:
             session = sg.db.new_session()
