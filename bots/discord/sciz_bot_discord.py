@@ -181,6 +181,7 @@ if __name__ == '__main__':
                 print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in _sciz_fetch_events', file=sys.stderr)
                 traceback.print_exc()
                 print('', file=sys.stderr, flush=True)
+                sg.db.session.rollback()
             await asyncio.sleep(interval-1)
 
     # Start the bot
