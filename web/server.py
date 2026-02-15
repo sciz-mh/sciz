@@ -144,7 +144,7 @@ def hook_jwt_check(view_function):
     @jwt_required()
     def wrapper(*args, **kwargs):
         jwt_data = _decode_jwt_from_request(locations='headers', fresh=False)[0]
-        print('hook_jwt_check.wrapper lg jwt=' + len(str(jwt_data)))
+        #print('hook_jwt_check.wrapper lg jwt=' + str(len(str(jwt_data))))
         try:
             authorized = jwt_data['hook_type'] == 'HOOK'
             print('essai1 hooy_type=' + jwt_data['hook_type'])
@@ -186,7 +186,7 @@ def login():
     authorization_url = 'https://games.mountyhall.com/mountyhall/libs/oauth2/authorize.php'
     url = client.prepare_request_uri(
         authorization_url,
-        redirect_uri = 'https://sciz.mh.raistlin.fr/api/login/callback',
+        redirect_uri = 'https://www.sciz.fr/api/login/callback',
         scope = ['openid', 'profile'],
         state = 's1',
         nonce = 'xxx'
@@ -202,7 +202,7 @@ def authorize():
         data = client.prepare_request_body(
             #code = '',
             #scope = ''
-            redirect_uri = 'https://sciz.mh.raistlin.fr/api/login/callback',
+            redirect_uri = 'https://www.sciz.fr/api/login/callback',
             #client_id = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID],
             #client_secret = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SECRET],
             client_secret = 'jh6789_-"rTY78a%p',

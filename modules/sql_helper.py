@@ -37,6 +37,10 @@ from sqlalchemy.orm import object_session
 import modules.globals as sg
 
 class unaccent(ReturnTypeFromArgs):
+    # ceci ne permet pas d'éviter le warning : Class unaccent will not make use of SQL compilation caching
+    #def __init__(self, arg):
+    #    self.inherit_cache = False
+    #    super().__init__(arg, inherit_cache=False)
     pass
 
 # CLASS DEFINITION
