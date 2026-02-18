@@ -74,6 +74,7 @@ with webapp.app_context():
         webapp.config['JWT_HEADER_NAME'] = 'Authorization'
         webapp.config['JWT_HEADER_TYPE'] = ''
         webapp.config['JWT_IDENTITY_CLAIM'] = 'identity'
+        webapp.config['JWT_VERIFY_SUB'] = False
         webapp.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         webapp.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
         webapp.config['SESSION_COOKIE_NAME'] = 'session'
@@ -147,7 +148,7 @@ def hook_jwt_check(view_function):
         #print('hook_jwt_check.wrapper lg jwt=' + str(len(str(jwt_data))))
         try:
             authorized = jwt_data['hook_type'] == 'HOOK'
-            print('essai1 hooy_type=' + jwt_data['hook_type'])
+            #print('essai1 hook_type=' + jwt_data['hook_type'])
         except:
             # Backward compatibility with OLD SCIZ version
             authorized = jwt_data['user_claims']['hook_type'] == 'HOOK'

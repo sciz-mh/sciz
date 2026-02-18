@@ -168,15 +168,30 @@ if __name__ == '__main__':
                         events = hook.trigger()
                         #print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' coterie ' + str(hook.coterie_id) + ', hook id=' + str(hook.id) + ', après trigger')
                         if events is not None and len(events) > 0:
+                            #print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' coterie ' + str(hook.coterie_id) + ', hook id=' + str(hook.id) + ', n event=' + str(len(events)))
                             channel = bot.get_channel(int(hook.channel_id))
                             if channel:
+                                nSent = 0
+                                nEmpty = 0
+                                nNone = 0
                                 for event in events:
-                                    await channel.send(event['message'])
-                                print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' coterie ' + str(hook.coterie_id) + ', ' + str(len(events)) + ' messages')
+                                    if event['message'] is None:
+                                        nNone += 1
+                                    elif event['message'] == '':
+                                        nEmpty += 1
+                                    else:
+                                        await channel.send(event['message'])
+                                        nSent += 1
+                                msg = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' coterie ' + str(hook.coterie_id) + ', ' + str(len(events)) + ' messages, ' + str(nSent) + ' envoye(s)'
+                                if nNone > 0:
+                                    msg += ', ' + str(nNone) + ' None'
+                                if nEmpty > 0:
+                                    msg += ', ' + str(nEmpty) + ' Empty'
+                                print(msg, flush=True)
                             else:
-                                print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' incohérence sur le channel ' + str(hook.channel_id))
+                                print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' pas de channel pour la coterie ' + str(hook.coterie_id) + ', channel_id=' + str(hook.channel_id), flush=True)
                     else:
-                        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' incohérence sur la coterie ' + str(hook.coterie_id))
+                        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + 'pas de coterie pour coterie_id=' + str(hook.coterie_id), flush=True)
             except Exception as e:
                 print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in _sciz_fetch_events', file=sys.stderr)
                 traceback.print_exc()
