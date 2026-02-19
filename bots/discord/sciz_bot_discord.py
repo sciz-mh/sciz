@@ -195,7 +195,10 @@ if __name__ == '__main__':
             except Exception as e:
                 print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in _sciz_fetch_events', file=sys.stderr)
                 traceback.print_exc()
-                print('', file=sys.stderr, flush=True)
+                if hook is not None:
+                    print('exception pour coterie ' + str(hook.coterie_id) + ', channel_id=' + str(hook.channel_id), file=sys.stderr, flush=True)
+                else:
+                    print('', file=sys.stderr, flush=True)
                 sg.db.session.rollback()
             await asyncio.sleep(interval-1)
 

@@ -170,19 +170,6 @@ def login_old():
 
 @webapp.route('/api/login')
 def login():
-    # ancien : GET https://games.mountyhall.com/mountyhall/libs/oauth2/authorize.php?
-    # response_type=code
-    # client_id=SCIZ
-    # redirect_uri=https://www.sciz.fr/api/login/callback
-    # scope=openid profile
-    # state=VeGNobH8mZ5jUHLUfS1gC9qZ4wz5yq
-    # nonce=vkpbJk8WYDIFbRBH0Lxo
-    
-    # response_type=code
-    # client_id=SCIZ2
-    # redirect_uri=https%3A%2F%2Fsciz.brion.fr%2Fapi%2Fcallback
-    # scope=openid+profile
-    # state=s1
     client = WebApplicationClient(sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID])
     authorization_url = 'https://games.mountyhall.com/mountyhall/libs/oauth2/authorize.php'
     url = client.prepare_request_uri(
@@ -204,9 +191,7 @@ def authorize():
             #code = '',
             #scope = ''
             redirect_uri = 'https://www.sciz.fr/api/login/callback',
-            #client_id = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_ID],
-            #client_secret = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SECRET],
-            client_secret = 'jh6789_-"rTY78a%p',
+            client_secret = sg.conf[sg.CONF_MH_SECTION][sg.CONF_OAUTH_CLIENT_SECRET],
         )
         #print("prepare_request_body ok2")
         #print(data)
