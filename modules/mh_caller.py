@@ -280,12 +280,13 @@ class MhCaller:
             msgStatus = mh_call.status
             if msgStatus == '3': msgStatus = '3 (bad password)'
             sg.logger.warning('Error %s while calling profil4 for user %s' % (msgStatus, user.id))
-            if mh_call.status == '6' or mh_call.status == '2':
+            if mh_call.status == '6' or mh_call.status == '2' or mh_call.status == '3':
                 sg.logger.warning('MH account for user %s is deactivated, setting SP limits to 0 and disabling hook propagation' % (user.id,))
                 user.max_mh_sp_static = user.max_mh_sp_dynamic = 0
-                for p in user.partages:
-                    p.disablePropagation()
-                    sg.db.upsert(p)
+                if mh_call.status != '3':
+                    for p in user.partages:
+                        p.disablePropagation()
+                        sg.db.upsert(p)
                 sg.db.upsert(user)
             if verbose:
                 print('Erreur lors de la mise à jour du troll n°%s' % user.id)
@@ -442,12 +443,13 @@ class MhCaller:
             msgStatus = mh_call.status
             if msgStatus == '3': msgStatus = '3 (bad password)'
             sg.logger.warning('Error %s while calling Vue2 for user %s' % (msgStatus, user.id))
-            if mh_call.status == '6' or mh_call.status == '2':
+            if mh_call.status == '6' or mh_call.status == '2' or mh_call.status == '3':
                 sg.logger.warning('MH account for user %s is deactivated, setting SP limits to 0 and disabling hook propagation' % (user.id,))
                 user.max_mh_sp_static = user.max_mh_sp_dynamic = 0
-                for p in user.partages:
-                    p.disablePropagation()
-                    sg.db.upsert(p)
+                if mh_call.status != '3':
+                    for p in user.partages:
+                        p.disablePropagation()
+                        sg.db.upsert(p)
                 sg.db.upsert(user)
             if verbose:
                 print('Erreur lors de la mise à jour de la vue du troll n°%s' % user.id)
