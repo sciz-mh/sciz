@@ -35,7 +35,9 @@ class Coterie(sg.sqlalchemybase):
     grouped = Column(Boolean, default=True)
 
     # Associations
-    partages = relationship('Partage', back_populates='coterie', primaryjoin='Coterie.id == Partage.coterie_id', cascade='all,delete-orphan')
+    # 18/03/2026 tentative pour éviter l'écrasement des flags dans user_partage
+    #partages = relationship('Partage', back_populates='coterie', primaryjoin='Coterie.id == Partage.coterie_id', cascade='all,delete-orphan')
+    partages = relationship('Partage', primaryjoin='Coterie.id == Partage.coterie_id', cascade='refresh-expire, expunge')
     hooks = relationship('Hook', back_populates='coterie', primaryjoin='Coterie.id == Hook.coterie_id', cascade='all,delete-orphan')
     hook_miaou = relationship('Hook', primaryjoin='and_(Coterie.id == Hook.coterie_id, Hook.type == "Miaou")', uselist=False, viewonly=True)
     hook_discord = relationship('Hook', primaryjoin='and_(Coterie.id == Hook.coterie_id, Hook.type == "Discord")', uselist=False, viewonly=True)
