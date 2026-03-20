@@ -16,6 +16,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import relationship
 import datetime
 import modules.globals as sg
+import sys
 
 
 # CLASS DEFINITION
@@ -35,9 +36,13 @@ class Coterie(sg.sqlalchemybase):
     grouped = Column(Boolean, default=True)
 
     # Associations
-    # 18/03/2026 tentative pour éviter l'écrasement des flags dans user_partage
-    #partages = relationship('Partage', back_populates='coterie', primaryjoin='Coterie.id == Partage.coterie_id', cascade='all,delete-orphan')
-    partages = relationship('Partage', primaryjoin='Coterie.id == Partage.coterie_id', cascade='refresh-expire, expunge')
+    if 'iscord' in sys.argv[0]:
+        # 20/03/2026 éviter l'écrasement des flags dans user_partage dans le hook discord
+        partages = relationship('Partage', primaryjoin='Coterie.id == Partage.coterie_id', cascade='refresh-expire, expunge')
+        print('Coterie partage read-only')
+    else:
+        # version originale début 2026
+        partages = relationship('Partage', back_populates='coterie', primaryjoin='Coterie.id == Partage.coterie_id', cascade='all,delete-orphan')
     hooks = relationship('Hook', back_populates='coterie', primaryjoin='Coterie.id == Hook.coterie_id', cascade='all,delete-orphan')
     hook_miaou = relationship('Hook', primaryjoin='and_(Coterie.id == Hook.coterie_id, Hook.type == "Miaou")', uselist=False, viewonly=True)
     hook_discord = relationship('Hook', primaryjoin='and_(Coterie.id == Hook.coterie_id, Hook.type == "Discord")', uselist=False, viewonly=True)
