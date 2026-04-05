@@ -13,7 +13,7 @@ from classes.event_tresor import tresorEvent
 from classes.event_battle import battleEvent
 from classes.being import Being
 from modules.mail_helper import MailHelper
-import re, email, html.parser, json
+import re, email, html.parser, json, datetime
 import modules.globals as sg
 
 
@@ -26,6 +26,7 @@ class MailParser:
         self.subjects_regexps = self.__load_regexps_section([sg.CONF_SECTION_SUBJECTS])
         self.sections_regexps = {}
         self.sections_regexps[sg.CONF_SECTION_MAIL] = self.__load_regexps_section([sg.CONF_SECTION_MAIL])
+        self.localtz = datetime.datetime.now().astimezone().tzinfo
         for section in sg.regex:
             if section.endswith('Event'):
                 self.sections_regexps[section] = self.__load_regexps_section([sg.CONF_SECTION_COMMON, section])
@@ -231,7 +232,7 @@ class MailParser:
                 obj.owner_id = user.id
             # If we did not find a time for the mail (no MH header in the mail body?), we fix it using the 'Date' mail header
             if not hasattr(obj, 'time') or obj.time is None:
-                obj.time = email.utils.parsedate_to_datetime(headers['Date']).replace(tzinfo=None)
+                obj.time = email.utils.parsedate_to_datetime(headers['Date']).astimezone(self.localtz).replace(tzinfo=None)
             # If the user has a personal mail, check the 'from' header for it
             if not isinstance(obj, MailHelper) and user.user_mail is not None and user.user_mail != '' and not any('bot@mountyhall.com' in f for f in froms):
                 if not any(user.user_mail in f for f in froms):
