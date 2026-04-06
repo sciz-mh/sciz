@@ -73,6 +73,7 @@ class MhCaller:
         # Get the file
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpTrolls2))
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         trolls = []
         i = 0
@@ -151,6 +152,7 @@ class MhCaller:
         # Get the file
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpMonstres))
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
         for line in lines:
@@ -186,6 +188,7 @@ class MhCaller:
         # Get the file
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpTresors))
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
         for line in lines:
@@ -206,6 +209,7 @@ class MhCaller:
         sg.logger.info('Calling Sorts MH FTP...')
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpSorts))
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
         for line in lines:
@@ -219,6 +223,7 @@ class MhCaller:
         sg.logger.info('Calling Comps MH FTP...')
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpComps))
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
         for line in lines:
@@ -273,6 +278,7 @@ class MhCaller:
             mh_call.status = 4
             sg.db.upsert(mh_call)
             return False
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         res = re.search(r'Erreur\s+(\d)', mh_r.text)
         if res is not None:
             mh_call.status = res.group(1)
@@ -436,6 +442,7 @@ class MhCaller:
             mh_call.status = 4
             sg.db.upsert(mh_call)
             return False
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         res = re.search(r'Erreur\s+(\d)', mh_r.text)
         if res is not None:
             mh_call.status = res.group(1)
@@ -456,6 +463,7 @@ class MhCaller:
             return False
         sg.db.upsert(mh_call)
         # Parse the data
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         flag = 0 # 1 is Troll, 2 is Mob, 3 is Orig, 4 is Lieux
         objs_set = None
@@ -593,6 +601,7 @@ class MhCaller:
         sep = ';'
         yesterday = datetime.date.today() - datetime.timedelta(days=1)
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpEvents.replace('yyyymmdd', yesterday.strftime("%Y%m%d")).replace('yyyy', yesterday.strftime("%Y"))))
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         mobs = []
         i = 0
@@ -621,6 +630,7 @@ class MhCaller:
         # Get the file
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpGuildes))
+        mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         guildes = []
         i = 0
