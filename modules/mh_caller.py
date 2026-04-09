@@ -630,8 +630,9 @@ class MhCaller:
         # Get the file
         sep = ';'
         mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpGuildes))
-        mh_r.encoding = None    # let request object find the encoding automagicaly
+        mh_r.encoding = None    # let request object find the encoding automagicaly. This removes the BOM
         lines = mh_r.text.split('\n')
+        #sg.logger.info('last line of guildes: %s' % lines[len(lines)-1])
         guildes = []
         i = 0
         for line in lines:
@@ -646,9 +647,11 @@ class MhCaller:
         # Separate existing and new objects
         existing = [str(r.id) for r in sg.db.session.query(Guilde.id).filter(Guilde.id.in_([guilde.id for guilde in guildes])).all()]
         to_insert = [guilde for guilde in guildes if str(guilde.id) not in existing]
+        #sg.logger.info('no of guilde to insert: %d' % len(to_insert))
         to_update = [guilde for guilde in guildes if str(guilde.id) in existing]
         # Bulk insert new objects
         if len(to_insert) > 0:
+            #sg.logger.info('last guilde to insert: %s' % to_insert[len(to_insert)-1].nom)
             #sg.db.engine.execute(Guilde.__table__.insert(), [sg.row2dict(guilde) for guilde in to_insert])
             with sg.db.engine.begin() as conn2:
                 conn2.execute(Guilde.__table__.insert(), [sg.row2dict(guilde) for guilde in to_insert])
