@@ -251,7 +251,7 @@ battleEvent:
   re_machouillage: '(?s)Le\s+trésor\s+\[(?P<tresor_id>\d+)]\s+(?P<tresor_nom>.+?)\s+a\s+été\s+en\s+partie\s+(?P<type>mangé)'
   re_ea: '(?s)((?P<capa_desc>évènement aléatoire).*?(ACTION|action)\s*:\s*(?P<capa_effet>.+?)\s*\((R|r)areté)'
   re_prog: 'a été (?P<prog>programmée?) avec succès'
-  re_retraite_effet: '(?i)Retraite\s+(?P<capa_effet>vers\s+[^\)]+)'
+  re_retraite_effet: '(?i)Retraite\s+(?P<capa_effet>vers\s+[^\)]+\))'
   re_camou: '(?s)Votre\s+(?P<flag_camou>(c|C)amouflage\s+(est\s+toujours\s+effectif|a\s+été\s+(annulé|ANNULÉ)))'
   re_pouvoir: 'Le\s+monstre.+?a\s+utilisé\s+sa\s+capacité\s+spéciale\s*:\s*(?P<type>.+)'
   re_pouvoir_alt: 'Le monstre utilise son pouvoir d''(?P<type>Anéantissement Magique)'
