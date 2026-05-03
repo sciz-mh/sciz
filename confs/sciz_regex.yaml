@@ -241,6 +241,7 @@ battleEvent:
   re_insulte_ok: '(?s)(?P<flag_insulte_ok>yeux\s+que\s+pour\s+vous)'
   re_insulte_nok: '(?s)(?P<flag_insulte_nok>Néanmoins\s+le\s+regard\s+de\s+celui-ci\s+se\s+porte)'
   re_insulte_meh: '(?s)(?P<flag_insulte_meh>semble\s+avoir\s+entendu\s+votre\s+insulte)'
+  re_insulte_meute: '(?s)(?P<flag_insulte_meute>instinct\s+de\s+meute\s+ne\s+prend\s+pas\s+le\s+dessus)'
   re_he: '(?s)(Votre\s+cible\s+(n'')?est( pas)?\s+(?P<he>Effrayée))'
   re_retraite: 'un mouvement de (?P<dir_for>retraite) vers l(e |'')(?P<direction>\w+)'
   re_pistage_pos: 'Vous\s+êtes\s+en\s+X\s*=\s*(?P<pos_x>-?\d+)\s*,\s*Y\s*=\s*(?P<pos_y>-?\d+)\s*,\s*N\s*=\s*(?P<pos_n>-?\d+)'

@@ -310,6 +310,8 @@ class battleEvent(Event):
                 self.type += ' inefficace'
             elif hasattr(self, 'flag_insulte_meh') and self.flag_insulte_meh is not None:
                 self.type += ' à l\'effet incertain'
+            elif hasattr(self, 'flag_insulte_meute') and self.flag_insulte_meute is not None:
+                self.type += ' sauf instinct de meute'
             elif not hasattr(self, 'flag_resist') or self.flag_resist is None:
                 self.type += ' efficace'
         # Fix CA
