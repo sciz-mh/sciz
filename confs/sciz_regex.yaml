@@ -217,6 +217,7 @@ battleEvent:
   re_sort: '(?s)(effet\s+(théorique\s+)?suivant\s*(\(hors\s+décumul\)\s+)?:\s+(?P<capa_effet>([^\n]+\n?[^\n]+\|)*[^\(]+?\d+(D\d)?\s*%?)?(\s*\(\-(?P<pdv>\d+)\))?[\*\n]*((?P<def_nom>.+?)\s+\((?P<def_id>\d+)\))?(\n| a été influencé))'
   # re_fracassage doit être après re_sort car re_sort efface capa_effet
   re_fracassage: '(?s)(?i)(Le Sortilège FRACASSAGE a eu l.effet suivant).*\s+(?P<capa_effet>Arm\s*:\s*-\d+D\d+)'
+  re_paralysie: '(?s)(?i)Cette attaque provoque un malus dû à la (?P<capa_effet>paralysie\s+de\s+\d+D\d+\smin\spour.*tours*)'
   re_def_sort_resi: 'Vous (n'')?(?P<flag_resist>avez) (?!pas )?réussi à y résister'
   re_piege_pose: '(?s)(((?P<flag_att>votre)|(?P<flag_def>un))\s+(?P<type>Piège\s+à\s+.+)\s+situé\s+en\s+X\s*=\s*(?P<pos_x>-?\d+)\s*,\s*Y\s*=\s*(?P<pos_y>-?\d+)\s*,\s*N\s*=\s*(?P<pos_n>-?\d+))'
   re_piege: '(?s)(\n\s*\-\s*(?P<def_nom>.+?)\s+\((?P<def_id>\d+)\)\s+a\s+été\s+victime)'
