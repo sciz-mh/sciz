@@ -181,6 +181,8 @@ class MailParser:
                 if match is not None:
                     if hasattr(self, 'debug'):
                         print(key, match)
+                        for kgr in match.groupdict():
+                            print('--', kgr, match[kgr])
                     if FLAG_EXCLUDE in match.groupdict(): # If an exclude is flagged, add it for next iterations (following regexp matchs at this position won't be processed)
                         excludes.append((match.start(), match.end()))
                     if len(excludes) == 0 or FLAG_CHECK_EXCLUDES not in match.groupdict() or not any((match.start() >= s and match.end() <= e) for (s, e) in excludes):
