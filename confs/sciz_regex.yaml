@@ -289,4 +289,4 @@ battleEvent:
   re_vt: '(?i)(?P<def_nom>.*) +\((?P<def_id>\d+)\).*Vue Troubl.e[, ]*pour'
   re_saisie: '(?i)tentez de saisir *(?P<def_nom>.*) +\((?P<def_id>\d+)\).*comp'
   re_percution: '(?i)avez lanc. *(?P<autre_nom>.*) +\((?P<autre_id>\d+)\) sur (?P<def_nom>.*) +\((?P<def_id>\d+)\)'
-  re_abordement: '(?i)avez saut.*\s*sur (un|une|le Trõll)\s+(?P<def_nom>.*) +\((?P<def_id>\d+)\)'
+  re_abordement: '(?i)(?s)avez saut[^\(]*\s*sur (un|une|le Trõll)\s+(?P<def_nom>[^\(]*) +\((?P<def_id>\d+)\)([.]*.*inflig. )?((?P<pdv>\d+))?'
