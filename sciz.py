@@ -176,20 +176,20 @@ class SCIZ:
         #    except Exception as e:
         #        print('execption', e, mbox.get_file(item[0])._file.name)
 
-        #print('test des mails dans /home/rouletabille/exemples/mails')
-        #sg.logger = logging.getLogger('test')
-        #sg.wk.mailDirPath = '/home/rouletabille/exemples/mails'
-        ##sg.wk.nocommit = True;
-        ##sg.wk.mp.debug = True;
+        print('test des mails dans /home/rouletabille/exemples/mails')
+        sg.logger = logging.getLogger('test')
+        sg.wk.mailDirPath = '/home/rouletabille/exemples/mails'
+        #sg.wk.nocommit = True;
+        sg.wk.mp.debug = True;
         #sg.user = sg.db.session.query(User).get(80117)
         #sg.wk.walk()
-        #sg.user = sg.db.session.query(User).get(91305)
-        #sg.wk.walk()
+        sg.user = sg.db.session.query(User).get(91305)
+        sg.wk.walk()
 
-        sql1 = "select * from sciz.hook where channel_id=:id"
-        a = {'id':'1'}
-        sg.db.session.execute(sql.text(sql1), a)
-        #sg.db.session.execute(sql1, a)
+        #sql1 = "select * from sciz.hook where channel_id=:id"
+        #a = {'id':'1'}
+        #sg.db.session.execute(sql.text(sql1), a)
+        ##sg.db.session.execute(sql1, a)
 
         print('end of test')
         pass

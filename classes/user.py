@@ -142,7 +142,7 @@ class User(sg.sqlalchemybase):
             return None
 
     def is_same_maisonnee(self, troll_id):
-        if str(self.id) == troll_id:
+        if str(self.id) == str(troll_id):
             return True
         if self.troll is not None and self.troll.maisonnee is not None:
             return any([str(t.id) == troll_id for t in self.troll.maisonnee.trolls])

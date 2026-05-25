@@ -144,18 +144,28 @@ class MailParser:
         # The .yaml config file must also have a section named as the
         # key that previously matched or at least the class name with all the
         # associated regexps to match in the mail
-        if hasattr(self, 'debug'):
-            matchs = []
-            for (k, r) in self.sections_regexps[_class]:
-                m  = r.finditer(body)
-                matchs.append((k, m))
-                mLog = []
-                for m2 in m:
-                    mLog.append(m2)
-                sg.logger.info('k=%s, r=%s' % (k, r))
-                sg.logger.info(mLog)
-        else:
-            matchs = [(k, r.finditer(body)) for (k, r) in self.sections_regexps[_class]]
+
+        #if hasattr(self, 'debug'):
+        #    #sg.logger.info('_class=%s, nb regex=%d' % (_class, len(self.sections_regexps[_class])))
+        #    matchs = []
+        #    for (k, r) in self.sections_regexps[_class]:
+        #        m  = r.finditer(body)
+        #        matchs.append((k, m))
+        #        mLog = []
+        #        for m2 in m:
+        #            mLog.append(m2)
+        #        sg.logger.info('k=%s, r=%s' % (k, r))
+        #        sg.logger.info(mLog)
+        #else:
+        matchs = [(k, r.finditer(body)) for (k, r) in self.sections_regexps[_class]]
+        #for (key, matchall) in matchs:
+        #    print('key=%s, nb=%d' % (key, len(matchall)))
+        #    print('key=%s' % key)
+        #    if matchall is not None:
+        #        for xxxx in matchall:
+        #            pass
+        #        if match is not None:
+        #            print(match)
         # We build a base event with the regexps that matched only once (first entry in res dictionnary)
         # And a list of events with the regexps that matched several time in the following entries of res dictionnary
         FLAG_EXCLUDE = 'FLAG_EXCLUDE'
@@ -169,6 +179,8 @@ class MailParser:
             matchall_filtered = []
             for match in matchall:
                 if match is not None:
+                    if hasattr(self, 'debug'):
+                        print(key, match)
                     if FLAG_EXCLUDE in match.groupdict(): # If an exclude is flagged, add it for next iterations (following regexp matchs at this position won't be processed)
                         excludes.append((match.start(), match.end()))
                     if len(excludes) == 0 or FLAG_CHECK_EXCLUDES not in match.groupdict() or not any((match.start() >= s and match.end() <= e) for (s, e) in excludes):

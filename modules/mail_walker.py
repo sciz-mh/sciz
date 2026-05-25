@@ -123,9 +123,13 @@ class MailWalker:
             users = [sg.user]
             if sg.user.troll.maisonnee is not None:
                 users = [t.user for t in sg.user.troll.maisonnee.trolls]
+            if hasattr(sg.wk.mp, 'debug'):
+                print('nb user=%d' % len(users))
             for u in users:
                 for p in u.partages_actifs + [u.partage_perso]:
                     if p.coterie is not None and p.coterie.hook_miaou is not None:
+                        if hasattr(sg.wk.mp, 'debug'):
+                            print('send event to miaou')
                         p.coterie.hook_miaou.trigger(False)
         except (OSError, IOError, mailbox.Error) as e:
             sg.logger.error('Fail to scan mail directory! Error: %s' % e)

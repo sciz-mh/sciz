@@ -45,7 +45,8 @@ subjects:
   battleEvent_piege: '(?s)(?P<type>Déclenchement d(u|e) (P|p)iège( sur un suivant)?)'
   battleEvent_vl: '(?i)(?P<type>Vision lointaine)'
   battleEvent_saisir: '(?i)(?P<type>Saisie).* d'''
-  battleEvent_percission: '(?i)(?P<type>Percution).* d'''
+  battleEvent_percussion: '(?i)(?P<type>Percution).* d'''
+  #battleEvent_fracassage: '(?s)(Sortilège\s*:\s*(?P<type>Fracassage)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_sort: '(?s)Sortilège(\s*sur\s*Suivant)?\s*:\s*(?P<type>.+?)(\s+en\s+X\s*=\s*(?P<pos_x>\-?\d+)\s*,\s*Y\s*=\s*(?P<pos_y>\-?\d+)\s*,\s*N\s*=\s*(?P<pos_n>\-?\d+))?($|\s+lancé\s+par\s+(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)|\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_sort_suivant: '(?s)Sortilège\s+sur\s+Suivant\s*:\s*(?P<type>.+?)\s+lancé\s+par\s+(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)'
   battleEvent_pouvoir: '(?s)pouvoir \"(?P<type>.+)\"\s+d''(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)'
@@ -78,6 +79,7 @@ subjects:
   battleEvent_neige: '(?s)((?P<type>Lancer\s+de\s+Boule\s+de\s+Neige)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_painthure: '(?P<type>Painthure de Guerre)'
   battleEvent_dressage: '(?s)(Compétence\s*:\s*(?P<type>Dressage)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
+  battleEvent_abordement: '(?s)(Compétence\s*:\s*(?P<type>Abordement)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_objet_mort: '(?s)(\]\s*(?P<type>.+?)\s+(?P<flag_dead>mortel(le)?)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
 
 # Regexps for the forwarding confirmation mails
@@ -287,3 +289,4 @@ battleEvent:
   re_vt: '(?i)(?P<def_nom>.*) +\((?P<def_id>\d+)\).*Vue Troubl.e[, ]*pour'
   re_saisie: '(?i)tentez de saisir *(?P<def_nom>.*) +\((?P<def_id>\d+)\).*comp'
   re_percution: '(?i)avez lanc. *(?P<autre_nom>.*) +\((?P<autre_id>\d+)\) sur (?P<def_nom>.*) +\((?P<def_id>\d+)\)'
+  re_abordement: '(?i)avez saut.*\s*sur (un|une|le Trõll)\s+(?P<def_nom>.*) +\((?P<def_id>\d+)\)'

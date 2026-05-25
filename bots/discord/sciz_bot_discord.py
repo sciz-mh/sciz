@@ -21,7 +21,6 @@ from discord.ext.commands import Bot
 # CONSTS
 DEFAULT_CHARSET = 'utf-8'
 SCIZ_URL_BASE = 'https://newv6.sciz.fr/api/hook'
-#SCIZ_URL_BASE = 'https://sciz.brion.fr/api/hook'
 #SCIZ_URL_BASE = 'http://127.0.0.1/api/hook'
 #SCIZ_URL_BASE = 'http://localhost/api/hook'
 SCIZ_URL_EVENTS = SCIZ_URL_BASE + '/events'
