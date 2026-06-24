@@ -81,6 +81,7 @@ subjects:
   battleEvent_dressage: '(?s)(Compétence\s*:\s*(?P<type>Dressage)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_abordement: '(?s)(Compétence\s*:\s*(?P<type>Abordement)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_objet_mort: '(?s)(\]\s*(?P<type>.+?)\s+(?P<flag_dead>mortel(le)?)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
+  battleEvent_ldp: '(?is)(Compétence\s*:\s*(?P<type>Lancer de Potions*)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
 
 # Regexps for the forwarding confirmation mails
 MailHelper:
