@@ -379,7 +379,8 @@ class battleEvent(Event):
             self.type += " (propulsion réussie)"
         # Handle the flags
         if hasattr(self, 'flag_resist_att_mag'):
-            self.flag_resist = self.flag_resist_att_mag is not None and (not hasattr(self, 'capa_effet') or self.capa_effet is None)
+            # Roule 24/06/2026 garder flag_resist_att_mag pour la Trombe mentale. Est-ce que ça devrait être le cas pour tous les poubvoir ?
+            self.flag_resist = self.flag_resist_att_mag is not None and (not hasattr(self, 'capa_effet') or self.capa_effet is None or self.type == 'Trombe mentale')
         if hasattr(self, 'flag_resist'):
             self.flag_resist = self.flag_resist is not None and self.flag_resist != False
         if hasattr(self, 'flag_dead') and self.flag_dead is not None: self.vie = 0

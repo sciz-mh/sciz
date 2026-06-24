@@ -181,8 +181,8 @@ class SCIZ:
         sg.wk.mailDirPath = '/home/rouletabille/exemples/mails'
         #sg.wk.nocommit = True;
         sg.wk.mp.debug = True;
-        #sg.user = sg.db.session.query(User).get(80117)
-        #sg.wk.walk()
+        sg.user = sg.db.session.query(User).get(80117)
+        sg.wk.walk()
         sg.user = sg.db.session.query(User).get(91305)
         sg.wk.walk()
 
