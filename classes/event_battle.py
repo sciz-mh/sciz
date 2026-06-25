@@ -122,6 +122,7 @@ class battleEvent(Event):
 
     @hybrid_property
     def esquive_parfaite(self):
+        if self.type == 'Prendre un portail': return False
         if all(attr is not None for attr in [self.att, self.esq]):
             return int(self.esq) > int(self.att) * 2
         elif all(attr is not None for attr in [self.destab, self.stab]):
@@ -136,6 +137,7 @@ class battleEvent(Event):
 
     @hybrid_property
     def esquive(self):
+        if self.type == 'Prendre un portail': return False
         if all(attr is not None for attr in [self.att, self.esq]):
             return int(self.esq) >= int(self.att)
         elif all(attr is not None for attr in [self.destab, self.stab]):
@@ -334,6 +336,9 @@ class battleEvent(Event):
             if 'mydikan' in self.direction.lower(): self.dir_y = 'Y-'
             if 'haut' in self.direction.lower(): self.dir_n = 'N+'
             if 'bas' in self.direction.lower(): self.dir_n = 'N-'
+        # coord saut TP
+        if hasattr(self, 'x0') and hasattr(self, 'x1') and hasattr(self, 'y0') and hasattr(self, 'y1') and hasattr(self, 'n0') and hasattr(self, 'n1') :
+            self.capa_effet = 'de [%s, %s, %s] vers [%s, %s, %s]' % (self.x0, self.y0, self.n0, self.x1, self.y1, self.n1)
         if hasattr(self, 'flag_pistage_hors') and self.flag_pistage_hors is not None:
             self.dir_x = 'hors de portée'
         if hasattr(self, 'flag_pistage_zone') and self.flag_pistage_zone is not None:

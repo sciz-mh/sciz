@@ -82,6 +82,7 @@ subjects:
   battleEvent_abordement: '(?s)(Compétence\s*:\s*(?P<type>Abordement)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_objet_mort: '(?s)(\]\s*(?P<type>.+?)\s+(?P<flag_dead>mortel(le)?)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
   battleEvent_ldp: '(?is)(Compétence\s*:\s*(?P<type>Lancer de Potions*)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\))'
+  battleEvent_sauttp: '(?is)(?P<type>Prendre un portail)\s+.*en\s+X\s*=*\s*(?P<x0>-*\d+)[\|\s]+Y\s*=*\s*(?P<y0>-*\d+)[\|\s]++N\s*=*\s*(?P<n0>-*\d+)'
 
 # Regexps for the forwarding confirmation mails
 MailHelper:
@@ -294,3 +295,4 @@ battleEvent:
   re_saisie: '(?i)tentez de saisir *(?P<def_nom>.*) +\((?P<def_id>\d+)\).*comp'
   re_percution: '(?i)avez lanc. *(?P<autre_nom>.*) +\((?P<autre_id>\d+)\) sur (?P<def_nom>.*) +\((?P<def_id>\d+)\)'
   re_abordement: '(?i)(?s)avez saut[^\(]*\s*sur (un|une|le Trõll)\s+(?P<def_nom>[^\(]*) +\((?P<def_id>\d+)\)([.]*.*inflig. )?((?P<pdv>\d+))?'
+  re_tp_to: '(?is)a[^\s]*\s+été\s+téléporté\s+en\s+X\s*=*\s*(?P<x1>-*\d+)[\|\s]+Y\s*=*\s*(?P<y1>-*\d+)[\|\s]++N\s*=*\s*(?P<n1>-*\d+).*(Attaque\s*:[^\(]*\((?P<att>-*\d+)\)).*(Esquive\s*:\s*(?P<esq>-*\d+))'
