@@ -146,6 +146,7 @@ class battleEvent(Event):
 
     @hybrid_property
     def critique(self):
+        if self.type == 'Prendre un portail': return False
         if all(attr is not None for attr in [self.att, self.esq]):
             return int(self.att) > int(self.esq) * 2
         elif all(attr is not None for attr in [self.att, self.ref]):
