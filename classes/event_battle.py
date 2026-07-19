@@ -338,12 +338,15 @@ class battleEvent(Event):
             if 'haut' in self.direction.lower(): self.dir_n = 'N+'
             if 'bas' in self.direction.lower(): self.dir_n = 'N-'
         # coord saut TP
-        if hasattr(self, 'x0') and hasattr(self, 'x1') and hasattr(self, 'y0') and hasattr(self, 'y1') and hasattr(self, 'n0') and hasattr(self, 'n1') :
+        if hasattr(self, 'x0') and hasattr(self, 'x1') and hasattr(self, 'y0') and hasattr(self, 'y1') and hasattr(self, 'n0') and hasattr(self, 'n1'):
             self.capa_effet = 'de [%s, %s, %s] vers [%s, %s, %s]' % (self.x0, self.y0, self.n0, self.x1, self.y1, self.n1)
         if hasattr(self, 'flag_pistage_hors') and self.flag_pistage_hors is not None:
             self.dir_x = 'hors de portée'
         if hasattr(self, 'flag_pistage_zone') and self.flag_pistage_zone is not None:
             self.dir_x = 'sur zone'
+        # coord destination TP avec VL
+        if hasattr(self, 'destTP'):
+            self.capa_effet = 'vers [%s] de ' % (self.destTP)
         # Fix capa
         if hasattr(self, 'capa_effet') and self.capa_effet is not None:
             self.capa_effet = re.sub(r'\|$', ' ', self.capa_effet).strip()

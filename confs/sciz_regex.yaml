@@ -291,6 +291,7 @@ battleEvent:
   re_propulseur_nok: '(?P<flag_propulseur_nok>Le\s+propulseur\s+ne\s+vous\s+a\s+donc\s+été\s+d''aucune\s+utilité)'
   re_vl_normal:   '(?i)Zone\s*centrale\s*ciblée\s*:\s*X\s*=\s*(?P<pos_x>\-?\d+)\s*\|\s*Y\s*=\s*(?P<pos_y>\-?\d+)\s*\|\s*N\s*=\s*(?P<pos_n>\-?\d+)'
   re_vl_cachette: '(?i)Zone\s*centrale\s*ciblée\s*:\s*X\s*=\s*(?P<pos_x>\-?\d+)\s*\|\s*Y\s*=\s*(?P<pos_y>\-?\d+)\s*\|\s*N\s*=\s*(?P<pos_n>\-?\d+) *\[\d+\] *(?P<capa_desc>cachette)'
+  re_vl_tp: '(?is)Zone\s*centrale\s*ciblée\s*:\s*X\s*=\s*(?P<pos_x>\-?\d+)\s*\|\s*Y\s*=\s*(?P<pos_y>\-?\d+)\s*\|\s*N\s*=\s*(?P<pos_n>\-?\d+) *\[\d+\] *(?P<capa_desc>Portail de Téléportation).*(?P<destTP>X\s*=\s*[-+\d]+.*Y\s*=\s*[-+\d]+.*N\s*=\s*[-+\d]+)'
   re_vt: '(?i)(?P<def_nom>.*) +\((?P<def_id>\d+)\).*Vue Troubl.e[, ]*pour'
   re_saisie: '(?i)tentez de saisir *(?P<def_nom>.*) +\((?P<def_id>\d+)\).*comp'
   re_percution: '(?i)avez lanc. *(?P<autre_nom>.*) +\((?P<autre_id>\d+)\) sur (?P<def_nom>.*) +\((?P<def_id>\d+)\)'

@@ -88,6 +88,7 @@ class MailParser:
             mail_body = body
         except Exception as e:
             sg.logger.error('Failed to parse a mail: %s' % e)
+            sg.logger.exception(e)
         # Just in case some htmlentities were put in the mail...
         mail_body = html.unescape(mail_body) if mail_body is not None else mail_body
         # Extract mail headers also for later user (see parse)
