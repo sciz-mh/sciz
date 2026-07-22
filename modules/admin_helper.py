@@ -147,7 +147,7 @@ class AdminHelper:
     def vacuum(self):
         # Mail directory purge
         last_mail_purge = None
-        #last_vacuum = None
+        last_vacuum = None
         #list_table = ['being', 'being_mob', 'being_mob_meta', 'being_mob_private', 'being_troll', 'being_troll_private', 'being_troll_private_capa', 'capa_meta', 'champi', 'champi_private', 'coterie', 'event_aa', 'event_battle', 'event_cdm', 'event_champi', 'event_cp', 'event_follower', 'event_tp', 'event_tresor', 'event_user', 'guilde', 'hook', 'lieu', 'lieu_piege', 'lieu_portail', 'maisonnee', 'tresor', 'tresor_meta', 'tresor_private', 'user', 'user_mh_call', 'user_partage']
         while True:
             now = datetime.datetime.now()
@@ -155,12 +155,21 @@ class AdminHelper:
                 users = sg.db.session.query(User).all()
                 for user in users:
                     sg.wk.purge(user, 'archive')
-            # inutile, autovacuum fait le jon
-            #if (last_vacuum is None or (now - last_vacuum).total_hours() >= 10) and now.hour == 9:
-            #    sg.db.session.execute(sql.text("commit"))   # vacuum must run out of a transaction
-            #    for table in list_table:
-            #        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' avant vacuum ' + table)
-            #        sqlu = "vacuum sciz.sciz." + table
-            #        res = sg.db.session.execute(sql.text(sqlu))
-            #    print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' fin des vacuum')
+            if (last_vacuum is None or (now - last_vacuum).total_seconds() >= 36000) and now.hour == 9:
+                #inutile, autovacuum fait le job
+                #sg.db.session.execute(sql.text("commit"))   # vacuum must run out of a transaction
+                #for table in list_table:
+                #    print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' avant vacuum ' + table)
+                #    sqlu = "vacuum sciz.sciz." + table
+                #    res = sg.db.session.execute(sql.text(sqlu))
+                #print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' fin des vacuum')
+
+                sg.db.session.execute(sql.text("start transaction"))
+                sg.db.session.execute(sql.text("delete from event_cp where piege_id in (select id from lieu_piege lp where lp.creation_datetime < (now() - interval '12' month))"))
+                sg.db.session.execute(sql.text("delete from lieu where id in (select id from lieu_piege lp where lp.creation_datetime < (now() - interval '12' month))"))
+                sg.db.session.execute(sql.text("commit"))
+                msg = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' fin des suppressions pièges'
+                sg.logger.info(msg)
+                print(msg)
+                last_vacuum = datetime.datetime.now()
             time.sleep(60)
