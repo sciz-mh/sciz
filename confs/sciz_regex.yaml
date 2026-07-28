@@ -53,6 +53,7 @@ subjects:
   battleEvent_pouvoir_alt: '(?s)pouvoir du monstre n°(?P<att_id>\d+)\s+\((?P<att_nom>.+)\)'
   battleEvent_pouvoir_ter: '(?s)pouvoir\s+d''(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)'
   battleEvent_pouvoir_enfume: '(?s)Résultat de l.enfumage d.une*\s+(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)'
+  battleEvent_pouvoir_aneantissement: '(?s)Résultat de l.anéantissement d.un*\s+(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)'
   battleEvent_marquage: '(?s)(?P<type>Marquage)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\)'
   battleEvent_parcho: '(?s)Résultat du (?P<type>Parchemin)$'
   battleEvent_potion: '(?s)Résultat de la (?P<type>Potion)$'
