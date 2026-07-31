@@ -122,14 +122,14 @@ followerEvent:
 # Regexps for aaEvent
 aaEvent:
   re_niv: 'Niveau.*?(?P<niv>\d+)'
-  re_pv: '.*Points de Vie.*(\(entre (?P<pdv_min>\d+) et (?P<pdv_max>\d+)\)|supérieur à (?P<pdv_sup>\d+)|inférieur à (?P<pdv_inf>\d+)|égal à (?P<pdv_eq>\d+)).*'
+  re_pv: '.*Points de Vie.*(\(entre (?P<pdv_min>\d+) et (?P<pdv_max>\d+)\)|supérieure*s* à (?P<pdv_sup>\d+)|inférieure*s* à (?P<pdv_inf>\d+)|égal à (?P<pdv_eq>\d+)).*'
   re_blessure: '.*Blessure[^\d]*(?P<blessure>\d+).*'
-  re_att: 'Attaque.*(\(entre (?P<att_min>\d+) et (?P<att_max>\d+)\)|supérieur à (?P<att_sup>\d+)|inférieur à (?P<att_inf>\d+)|égal à (?P<att_eq>\d+))'
-  re_esq: 'Esquive.*(\(entre (?P<esq_min>\d+) et (?P<esq_max>\d+)\)|supérieur à (?P<esq_sup>\d+)|inférieur à (?P<esq_inf>\d+)|égal à (?P<esq_eq>\d+))'
-  re_deg: 'Dég(â|à)t.*(\(entre (?P<deg_min>\d+) et (?P<deg_max>\d+)\)|supérieur à (?P<deg_sup>\d+)|inférieur à (?P<deg_inf>\d+)|égal à (?P<deg_eq>\d+))'
-  re_reg: 'Rég(é|è)n.*(\(entre (?P<reg_min>\d+) et (?P<reg_max>\d+)\)|supérieur à (?P<reg_sup>\d+)|inférieur à (?P<reg_inf>\d+)|égal à (?P<reg_eq>\d+))'
-  re_arm: 'Armure.*(\(entre (?P<arm_min>\d+) et (?P<arm_max>\d+)\)|supérieur à (?P<arm_sup>\d+)|inférieur à (?P<arm_inf>\d+)|égal à (?P<arm_eq>\d+))'
-  re_vue: 'Vue.*(\(entre (?P<vue_min>\d+) et (?P<vue_max>\d+)\)|supérieur à (?P<vue_sup>\d+)|inférieur à (?P<vue_inf>\d+)|égal à (?P<vue_eq>\d+))'
+  re_att: 'Attaque.*(\(entre (?P<att_min>\d+) et (?P<att_max>\d+)\)|supérieure*s* à (?P<att_sup>\d+)|inférieure*s* à (?P<att_inf>\d+)|égal à (?P<att_eq>\d+))'
+  re_esq: 'Esquive.*(\(entre (?P<esq_min>\d+) et (?P<esq_max>\d+)\)|supérieure*s* à (?P<esq_sup>\d+)|inférieure*s* à (?P<esq_inf>\d+)|égal à (?P<esq_eq>\d+))'
+  re_deg: 'Dég(â|à)t.*(\(entre (?P<deg_min>\d+) et (?P<deg_max>\d+)\)|supérieure*s* à (?P<deg_sup>\d+)|inférieure*s* à (?P<deg_inf>\d+)|égal à (?P<deg_eq>\d+))'
+  re_reg: 'Rég(é|è)n.*(\(entre (?P<reg_min>\d+) et (?P<reg_max>\d+)\)|supérieure*s* à (?P<reg_sup>\d+)|inférieure*s* à (?P<reg_inf>\d+)|égal à (?P<reg_eq>\d+))'
+  re_arm: 'Armure.*(\(entre (?P<arm_min>\d+) et (?P<arm_max>\d+)\)|supérieure*s* à (?P<arm_sup>\d+)|inférieure*s* à (?P<arm_inf>\d+)|égal à (?P<arm_eq>\d+))'
+  re_vue: 'Vue.*(\(entre (?P<vue_min>\d+) et (?P<vue_max>\d+)\)|supérieure*s* à (?P<vue_sup>\d+)|inférieure*s* à (?P<vue_inf>\d+)|égal à (?P<vue_eq>\d+))'
 
 # Regexps for cdmEvent
 cdmEvent:

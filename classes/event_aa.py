@@ -84,8 +84,8 @@ class aaEvent(Event):
         super().build()
         # aaEvent Niv 1
         for attr in ['pdv', 'att', 'esq', 'deg', 'reg', 'arm', 'vue']:
-            setattr(self, 'base_' + attr + '_min', getattr(self, attr + '_min') or getattr(self, attr + '_sup') or getattr(self, attr + '_eq'))
-            setattr(self, 'base_' + attr + '_max', getattr(self, attr + '_max') or getattr(self, attr + '_inf') or getattr(self, attr + '_eq'))
+            setattr(self, 'base_' + attr + '_min', getattr(self, attr + '_min', False) or getattr(self, attr + '_sup', False) or getattr(self, attr + '_eq', None))
+            setattr(self, 'base_' + attr + '_max', getattr(self, attr + '_max', False) or getattr(self, attr + '_inf', False) or getattr(self, attr + '_eq', None))
 
     def icon(self):
         return 'troll-map-icon.svg'
