@@ -235,7 +235,7 @@ class MailParser:
             for key in value_set:
                 setattr(obj, key, value_set[key])
                 if value_set[key] is not None:
-                    msglog = msglog + ' [' + key + ', ' + value_set[key] + ']'
+                    msglog = msglog + ' [' + str(key) + ', ' + str(value_set[key]) + ']'
             sg.logger.info('processing ' + obj.__class__.__name__ + msglog)
             obj.mail_subject = subject
             obj.mail_body = body
