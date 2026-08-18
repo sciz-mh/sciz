@@ -181,9 +181,11 @@ class MailParser:
             for match in matchall:
                 if match is not None:
                     if hasattr(self, 'debug'):
-                        print(key, match)
+                        #print(key, match)
+                        sg.logger.info('match key=' + str(key) + ', match=' + str(match))
                         for kgr in match.groupdict():
-                            print('--', kgr, match[kgr])
+                            #print('--', kgr, match[kgr])
+                            sg.logger.info('--kgr=' + str(kgr) + ', v=' + str(match[kgr]))
                     if FLAG_EXCLUDE in match.groupdict(): # If an exclude is flagged, add it for next iterations (following regexp matchs at this position won't be processed)
                         excludes.append((match.start(), match.end()))
                     if len(excludes) == 0 or FLAG_CHECK_EXCLUDES not in match.groupdict() or not any((match.start() >= s and match.end() <= e) for (s, e) in excludes):

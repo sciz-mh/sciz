@@ -198,7 +198,11 @@ if __name__ == '__main__':
                     print('exception pour coterie ' + str(hook.coterie_id) + ', channel_id=' + str(hook.channel_id), file=sys.stderr, flush=True)
                 else:
                     print('', file=sys.stderr, flush=True)
-                sg.db.session.rollback()
+                try:
+                    sg.db.session.rollback()
+                except Exception as e2:
+                    print('*** ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' exception in _sciz_fetch_events rollback', file=sys.stderr)
+                    print(e2, file=sys.stderr, flush=True)
             await asyncio.sleep(interval-1)
 
     # Start the bot
