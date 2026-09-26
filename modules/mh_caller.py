@@ -65,14 +65,14 @@ class MhCaller:
         return res
 
     # Caller to MH Trolls2 FTP
-    # See http://ftp.mountyhall.com/help.txt
+    # See https://ftp.mountyhall.com/help.txt
     def trolls2_ftp_call(self):
         sg.logger.info('Calling trolls2 MH FTP...')
         # known guildes in SCIZ (there are inconsistance in MH : Trolls in guilde that do not exists)
         existing_guilde = [str(r.id) for r in sg.db.session.query(Guilde.id)]
         # Get the file
         sep = ';'
-        mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpTrolls2))
+        mh_r = requests.get('https://%s/%s' % (self.ftpURL, self.ftpTrolls2))
         mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         trolls = []
@@ -114,8 +114,8 @@ class MhCaller:
                 troll.intangible = troll.intangible != '0'
                 troll.ami_mh = troll.ami_mh != '0'
                 troll.pnj = troll.pnj != '0'
-                if troll.blason_uri == 'http://www.mountyhall.com/images/Blasons/Blason_PJ/' + troll.id:
-                    troll.blason_uri = 'http://blason.mountyhall.com/Blason_PJ/' + troll.id
+                if troll.blason_uri == 'https://www.mountyhall.com/images/Blasons/Blason_PJ/' + troll.id:
+                    troll.blason_uri = 'https://blason.mountyhall.com/Blason_PJ/' + troll.id
                 trolls.append(troll)
                 i += 1
                 if i % 100 == 0:
@@ -146,12 +146,12 @@ class MhCaller:
             session.close()
 
     # Caller to the MH Monstres FTP
-    # See http://ftp.mountyhall.com/help.txt
+    # See https://ftp.mountyhall.com/help.txt
     def monstres_ftp_call(self):
         sg.logger.info('Calling monstres MH FTP...')
         # Get the file
         sep = ';'
-        mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpMonstres))
+        mh_r = requests.get('https://%s/%s' % (self.ftpURL, self.ftpMonstres))
         mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
@@ -164,14 +164,14 @@ class MhCaller:
                 sg.db.upsert(metamob, session)
         # Some data are missing...
         missing_mobs = [
-            {'id': -1, 'nom': 'Diablotin', 'determinant': 'un', 'blason_uri': 'http://www.mountyhall.com/images/Monstres/Diablotin.jpg'},
-            {'id': -2, 'nom': 'Pseudo-Dragon', 'determinant': 'un', 'blason_uri': 'http://www.mountyhall.com/images/Monstres/OF_PseudoDragon.jpg'},
-            {'id': -3, 'nom': 'Zombi', 'determinant': 'un', 'blason_uri': 'http://www.mountyhall.com/images/Monstres/Zombi.jpg'},
+            {'id': -1, 'nom': 'Diablotin', 'determinant': 'un', 'blason_uri': 'https://www.mountyhall.com/images/Monstres/Diablotin.jpg'},
+            {'id': -2, 'nom': 'Pseudo-Dragon', 'determinant': 'un', 'blason_uri': 'https://www.mountyhall.com/images/Monstres/OF_PseudoDragon.jpg'},
+            {'id': -3, 'nom': 'Zombi', 'determinant': 'un', 'blason_uri': 'https://www.mountyhall.com/images/Monstres/Zombi.jpg'},
             {'id': -4, 'nom': 'Essaim Cratérien', 'determinant': 'un', 'blason_uri': '-'},
-            {'id': -5, 'nom': 'Gowap', 'determinant': 'un', 'blason_uri': 'http://www.mountyhall.com/images/Monstres/BO_Gowap.jpg'},
-            {'id': -6, 'nom': 'Ver Carnivore', 'determinant': 'un', 'blason_uri': 'http://www.mountyhall.com/images/Monstres/GO_Vcg.jpg'},
+            {'id': -5, 'nom': 'Gowap', 'determinant': 'un', 'blason_uri': 'https://www.mountyhall.com/images/Monstres/BO_Gowap.jpg'},
+            {'id': -6, 'nom': 'Ver Carnivore', 'determinant': 'un', 'blason_uri': 'https://www.mountyhall.com/images/Monstres/GO_Vcg.jpg'},
             {'id': -7, 'nom': 'Familier', 'determinant': 'un', 'blason_uri': '-'},
-            {'id': -8, 'nom': 'Gnu', 'determinant': 'un', 'blason_uri': 'http://www.mountyhall.com/images/Monstres/GnuSauvage.jpg'}
+            {'id': -8, 'nom': 'Gnu', 'determinant': 'un', 'blason_uri': 'https://www.mountyhall.com/images/Monstres/GnuSauvage.jpg'}
         ]
         for missing_mob in missing_mobs:
             metamob = MetaMob()
@@ -182,12 +182,12 @@ class MhCaller:
         session.close()
 
     # Caller to the MH Tresors FTP
-    # See http://ftp.mountyhall.com/help.txt
+    # See https://ftp.mountyhall.com/help.txt
     def tresors_ftp_call(self):
         sg.logger.info('Calling tresors MH FTP...')
         # Get the file
         sep = ';'
-        mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpTresors))
+        mh_r = requests.get('https://%s/%s' % (self.ftpURL, self.ftpTresors))
         mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
@@ -203,12 +203,12 @@ class MhCaller:
         session.commit()
 
     # Caller to the MH Sorts/Competences FTP
-    # See http://ftp.mountyhall.com/help.txt
+    # See https://ftp.mountyhall.com/help.txt
     def capas_ftp_call(self):
         # Fetch MH Sorts from FTP
         sg.logger.info('Calling Sorts MH FTP...')
         sep = ';'
-        mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpSorts))
+        mh_r = requests.get('https://%s/%s' % (self.ftpURL, self.ftpSorts))
         mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
@@ -222,7 +222,7 @@ class MhCaller:
         # Fetch MH Comps (Metacapas) from FTP
         sg.logger.info('Calling Comps MH FTP...')
         sep = ';'
-        mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpComps))
+        mh_r = requests.get('https://%s/%s' % (self.ftpURL, self.ftpComps))
         mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         session = sg.db.new_session()
@@ -268,7 +268,7 @@ class MhCaller:
         sg.logger.info('Calling profil4 for user %s' % user.id)
         now = datetime.datetime.now()
         # Fetch the data from MH
-        mh_r = self.get_with_retries(user, 'http://%s/%s?%s=%s&%s=%s' % (self.spURL, self.spProfil4, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key))
+        mh_r = self.get_with_retries(user, 'https://%s/%s?%s=%s&%s=%s' % (self.spURL, self.spProfil4, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key))
         if mh_r is None:
             return False
         mh_call = MhCall(user_id=user.id, nom='Profil4', type='Dynamique', time=now, status=0, manual=manual)
@@ -432,7 +432,7 @@ class MhCaller:
         now = datetime.datetime.now()
         sep = ';'
         # Fetch the data from MH
-        mh_r = self.get_with_retries(user, 'http://%s/%s?%s=%s&%s=%s&%s=1&%s=1&%s=1' % (self.spURL, self.spVue2, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key, self.spParamLieux, self.spParamTresors, self.spParamChampis))
+        mh_r = self.get_with_retries(user, 'https://%s/%s?%s=%s&%s=%s&%s=1&%s=1&%s=1' % (self.spURL, self.spVue2, self.spParamID, user.id, self.spParamAPIKEY, user.mh_api_key, self.spParamLieux, self.spParamTresors, self.spParamChampis))
         if mh_r is None:
             return False
         mh_call = MhCall(user_id=user.id, nom='Vue2', type='Dynamique', time=now, status=0, manual=manual)
@@ -594,13 +594,13 @@ class MhCaller:
         return True
 
     # Caller to MH Events FTP
-    # See http://ftp.mountyhall.com/evenements/
+    # See https://ftp.mountyhall.com/evenements/
     def events_ftp_call(self):
         sg.logger.info('Calling Morts MH FTP...')
         # Get the file
         sep = ';'
         yesterday = datetime.date.today() - datetime.timedelta(days=1)
-        mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpEvents.replace('yyyymmdd', yesterday.strftime("%Y%m%d")).replace('yyyy', yesterday.strftime("%Y"))))
+        mh_r = requests.get('https://%s/%s' % (self.ftpURL, self.ftpEvents.replace('yyyymmdd', yesterday.strftime("%Y%m%d")).replace('yyyy', yesterday.strftime("%Y"))))
         mh_r.encoding = None    # let request object find the encoding automagicaly
         lines = mh_r.text.split('\n')
         mobs = []
@@ -624,12 +624,12 @@ class MhCaller:
             session.close()
 
     # Caller to MH Guildes FTP
-    # See http://ftp.mountyhall.com/help.txt
+    # See https://ftp.mountyhall.com/help.txt
     def guildes_ftp_call(self):
         sg.logger.info('Calling Guildes MH FTP...')
         # Get the file
         sep = ';'
-        mh_r = requests.get('http://%s/%s' % (self.ftpURL, self.ftpGuildes))
+        mh_r = requests.get('https://%s/%s' % (self.ftpURL, self.ftpGuildes))
         mh_r.encoding = None    # let request object find the encoding automagicaly. This removes the BOM
         lines = mh_r.text.split('\n')
         #sg.logger.info('last line of guildes: %s' % lines[len(lines)-1])

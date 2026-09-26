@@ -62,7 +62,10 @@ class SCIZ:
             for logger_name in ['walker', 'updater', 'server', 'cleaner', 'test']:
                 files.append((logger_name, res.group(1) + '_' + logger_name + '.log'))
         for logger_name, file in files:
-            log_file = RotatingFileHandler(file, 'a', logger_file_max_size, 1)
+            try:
+                log_file = RotatingFileHandler(file, 'a', logger_file_max_size, 1)
+            except Exception as e:
+                print('init class SCIZ erreur rotating ' + file)
             log_file.setLevel(logging_level)
             log_file.setFormatter(formatter)
             logger = logging.getLogger(logger_name)
