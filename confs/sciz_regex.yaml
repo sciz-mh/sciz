@@ -64,6 +64,7 @@ subjects:
   battleEvent_def_suiv: '(?s)Défenseur\s*-\s*Suivant\s*:\s*(?P<def_nom>.+)\s+\((?P<def_id>\d+)\)\s*-\s*(?P<type>.+?)\s+(de|d'')(?P<att_nom>.+?)\s+\((?P<att_id>\d+)\)'
   battleEvent_def: '(?s)Défenseur\s*-\s*(Suivant\s*-\s*)?(?P<type>.+?)\s+(de|d'')(?P<att_nom>.+?)\s+\((?P<att_id>\d+)\)'
   battleEvent_balayage_att: '(?s)(?P<type>Balayage)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\)'
+  battleEvent_balayage_def: '(?s)Résultat du (?P<type>balayage)\s+d.une*\s+(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)'
   battleEvent_insulte: '(?s)(?P<flag_he_insulte>(?P<type>Insultes?))\s*(?P<comp_niv>\d)\s*sur\s*(?P<def_nom>.+)\s+\((?P<def_id>\d+)\)'
   battleEvent_he: '(?s)(?P<flag_he_insulte>(?P<type>Hurlement Effrayant))\s*sur\s*(?P<def_nom>.+)\s+\((?P<def_id>\d+)\)'
   battleEvent_pistage: '(?s)(?P<flag_pistage>(?P<type>Pistage))\s*sur\s*(?P<def_nom>.+)\s+\((?P<def_id>\d+)\)'
