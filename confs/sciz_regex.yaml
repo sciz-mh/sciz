@@ -243,7 +243,7 @@ battleEvent:
   re_att_ldp: '(?s)(réussi\s+à\s+lancer\s+la\s+potion\s*:\s+(\[(?P<tresor_id>\d+)\]\s+)?(?P<type_potion>.+?)\s*\()'
   re_att_ldp_rate: 'Vous avez (complètement )?(?P<flag_ldp_rate>loupé votre cible)'
   re_siphon: '(?s)(malus\s+d''attaque\s+d(û|ü|u)\s+à\s+la\s+nécrose\s+de\s+(?P<capa_effet>\d+)\s+points?)'
-  re_rafale: '(?s)(malus\s+de\s+(?P<capa_effet>\d+)\s+points?\s+pour\s+.*\s+régénérations)'
+  re_rafale: '(?s)(malus\s+de\s+\-?(?P<capa_effet>\d+)\s+points?\s+pour\s+.*\s+régénérations)'
   re_ca: 'programmé une (?P<ca>CONTRE-ATTAQUE)'
   re_ca_bis: '(?s)(contre-attaqué\s+(?P<def_nom>.+?)\s+\((?P<def_id>\d+)\))'
   #re_att_balayage: '(?s)(avez\s+balayé\s+le\s+(Monstre|Tr.ll)\s+(?P<def_nom>.+?)\s+\((?P<def_id>\d+)\))'
