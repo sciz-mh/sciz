@@ -175,9 +175,9 @@ cpEvent:
 # Regexps for champiEvent
 champiEvent:
   #re_idc_ramassage: '(reconnu le|cueillir? un) (c|C)hampignon( :)? (?P<nom>.+)\s+(?P<qualite>.+?)\s+\((?P<champi_id>\d+)\)'
-  re_idc_ramassage: '(?i)(reconnu le|cueillir? un) (c|C)hampignon[\s:]+\[(?P<champi_id>\d+)\]\s+(?P<nom>.+)\s+(?P<qualite>(Acide|Salé|Sucré|Mielleux))'
+  re_idc_ramassage: '(?i)(reconnu le|cueillir? un) (c|C)hampignon[\s:]+\[(?P<champi_id>\d+)\](\s+(?P<nom>.+)\s+(?P<qualite>(Acide|Salé|Sucré|Mielleux)))?'
   re_inconnu: 'cueillir? un (c|C)hampignon (i|I)nconnu \((?P<champi_id>\d+)\)'
-  re_pos: 'en\s+X\s*=\s*(?P<pos_x>\-?\d+)\s*,\s*Y\s*=\s*(?P<pos_y>\-?\d+)\s*,\s*N\s*=\s*(?P<pos_n>\-?\d+)'
+  re_pos: 'en\s+X\s*=\s*(?P<pos_x>\-?\d+)\s*[,|]\s*Y\s*=\s*(?P<pos_y>\-?\d+)\s*[,|]\s*N\s*=\s*(?P<pos_n>\-?\d+)'
   re_planter_nok: '(?P<flag_planter_nok>Le champignon est détruit)'
 
 # Regexps for tresorEvent
