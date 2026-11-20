@@ -56,7 +56,7 @@ subjects:
   battleEvent_pouvoir_aneantissement: '(?s)Résultat de l.anéantissement d.un*\s+(?P<att_nom>.+)\s+\((?P<att_id>\d+)\)'
   battleEvent_marquage: '(?s)(?P<type>Marquage)\s+sur\s+(?P<def_nom>.+)\s+\((?P<def_id>\d+)\)'
   battleEvent_parcho: '(?s)Résultat du (?P<type>Parchemin)$'
-  battleEvent_potion: '(?s)Résultat de la (?P<type>Potion)$'
+  battleEvent_potion: '(?s)Résultat de la (?P<type>Potion)(\s+de\s+(?P<att_nom>.+)\s+\((?P<att_id>\d+)\))?$'
   battleEvent_ldp: '(?s)(?P<flag_ldp>(?P<type>Lancer de Potion)) ((sur (?P<def_nom>.*)\s*\((?P<def_id>\d+)\))|(?P<flag_def>de (?P<att_nom>.*)\s*\((?P<att_id>\d+)\)))'
   battleEvent_inter: '(?s)Attaquant\s*-\s*(Suivant\s*-\s*)?(?P<generic_type>.+?)\s+(\((?P<type>.+)\)\s+)?sur\s+(?P<autre_nom>.+?)\s+\((?P<autre_id>\d+)\)\s+interposée\s+par\s+(?P<def_nom>.+?)\s+\((?P<def_id>\d+)\)'
   battleEvent_att: '(?s)Attaquant\s*-\s*(Suivant\s*-\s*)?(?P<generic_type>.+?)\s+((\(|:\s)(?P<type>.+?)\)?\s+)?sur\s+(?P<def_nom>.+?)\s+\((?P<def_id>\d+)\)\s*$'
@@ -301,3 +301,4 @@ battleEvent:
   re_percution: '(?i)avez lanc. *(?P<autre_nom>.*) +\((?P<autre_id>\d+)\) sur (?P<def_nom>.*) +\((?P<def_id>\d+)\)'
   re_abordement: '(?i)(?s)avez saut[^\(]*\s*sur (un|une|le Trõll)\s+(?P<def_nom>[^\(]*) +\((?P<def_id>\d+)\)([.]*.*inflig. )?((?P<pdv>\d+))?'
   re_tp_to: '(?is)a[^\s]*\s+été\s+téléporté\s+en\s+X\s*=*\s*(?P<x1>-*\d+)[\|\s]+Y\s*=*\s*(?P<y1>-*\d+)[\|\s]++N\s*=*\s*(?P<n1>-*\d+).*(Attaque\s*:[^\(]*\((?P<att>-*\d+)\)).*(Esquive\s*:[^\(]*\(\s*(?P<esq>-*\d+))'
+  re_attaque_assourdisante: '(?is)(?P<capa_effet>Concentration.*)\s+Pour un'
