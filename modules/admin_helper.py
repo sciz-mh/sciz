@@ -148,6 +148,7 @@ class AdminHelper:
         # Mail directory purge
         last_mail_purge = None
         last_vacuum = None
+        last_fix_format_discord = None
         #list_table = ['being', 'being_mob', 'being_mob_meta', 'being_mob_private', 'being_troll', 'being_troll_private', 'being_troll_private_capa', 'capa_meta', 'champi', 'champi_private', 'coterie', 'event_aa', 'event_battle', 'event_cdm', 'event_champi', 'event_cp', 'event_follower', 'event_tp', 'event_tresor', 'event_user', 'guilde', 'hook', 'lieu', 'lieu_piege', 'lieu_portail', 'maisonnee', 'tresor', 'tresor_meta', 'tresor_private', 'user', 'user_mh_call', 'user_partage']
         while True:
             now = datetime.datetime.now()
@@ -172,4 +173,7 @@ class AdminHelper:
                 sg.logger.info(msg)
                 print(msg)
                 last_vacuum = datetime.datetime.now()
+            if (last_fix_format_discord is None or (now - last_fix_format_discord).total_seconds() >= 3600):
+                sg.db.session.execute(sql.text("""update hook set format = (select format from hook h2 where h2.id=6791 and h2.type='Discord') where (cast(format as varchar) = 'null' or format is null) and type='Discord'"""))
+                last_fix_format_discord = datetime.datetime.now()
             time.sleep(60)
