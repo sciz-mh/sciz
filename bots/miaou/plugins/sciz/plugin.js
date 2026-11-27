@@ -7,6 +7,7 @@ const SCIZ_URL_REQUEST = SCIZ_URL_BASE + '/request'
 
 var db;
 var ws;
+var bots;
 
 /*
  * Plugin init
@@ -31,34 +32,25 @@ exports.provider = {
 
 const providers = [exports.provider];
 
-function initProvider(p){
-	return this.getBot(p.botName)
-		.then(function(bot){
-			p.bot = bot;
-			if (p.botAvatar.src === bot.avatarsrc && p.botAvatar.key === bot.avatarkey) {
-				return;
-			}
-			bot.avatarsrc = p.botAvatar.src;
-			bot.avatarkey = p.botAvatar.key;
-			return this.updateUser(bot);
-		})
-		.then(function(){
-			return this.getUserInfo(p.bot.id);
-		})
-		.then(function(info){
-			if (info.description === p.botInfo.description) {
-				return;
-			}
-			return this.updateUserInfo(p.bot.id, p.botInfo);
-		})
-		.then(function(){
-			return p;
-		});
+async function initProvider(con, p){
+	var bot = await con.getBot(p.botName);
+	p.bot = bot;
+	if (p.botAvatar.src !== bot.avatarsrc || p.botAvatar.key !== bot.avatarkey) {
+		bot.avatarsrc = p.botAvatar.src;
+		bot.avatarkey = p.botAvatar.key;
+		await con.updateUser(bot);
+	}
+	var info = await con.getUserInfo(bot.id);
+	if (info.description !== p.botInfo.description) {
+		await con.updateUserInfo(bot.id, p.botInfo);
+	}
+	bots.register(bot);
 }
 
 exports.init = function(miaou){
 	db = miaou.db;
 	ws = miaou.lib("ws");
+	bots = miaou.lib("bots");
 	miaou.requestTag({
 		name: "MountyHall",
 		description:
@@ -71,9 +63,11 @@ exports.init = function(miaou){
 	});
 	return db.upgrade(exports.name, path.resolve(__dirname, 'sql'))
 		.then(function(){
-			return db.on(providers)
-				.each(initProvider)
-				.finally(db.off);
+			return db.do(async function(con){
+				for (var p of providers) {
+					await initProvider(con, p);
+				}
+			});
 		});
 }
 
@@ -95,25 +89,21 @@ function scizCalling(p, req, res){
 		return res.status(400).json({message: 'Bad request'});
 	}
 	res.send('');
-	return db.on()
-		.then(function(){
-			return this.queryOptionalRow(
-				"SELECT room FROM sciz WHERE jwt = $1",
-				[jwt],
-				"sciz / get room"
-			);
-		})
-		.then(function(row){
-			if (row && row.room && req.body && req.body.events) {
-				var events = JSON.parse(req.body.events);
-				for (var i = 0; i < events.length; i++) {
-					if (events[i].message) {
-						ws.botMessage(p.bot, row.room, events[i].message);
-					}
+	return db.do(async function(con){
+		var row = await con.queryOptionalRow(
+			"SELECT room FROM sciz WHERE jwt = $1",
+			[jwt],
+			"sciz / get room"
+		);
+		if (row && row.room && req.body && req.body.events) {
+			var events = JSON.parse(req.body.events);
+			for (var i = 0; i < events.length; i++) {
+				if (events[i].message) {
+					ws.botMessage(p.bot, row.room, events[i].message);
 				}
 			}
-		})
-		.finally(db.off);
+		}
+	});
 }
 
 /*
@@ -155,71 +145,63 @@ function onCommand(ct, p){
 }
 
 function registerRoom(ct, p, jwt){
-	return db.on()
-		.then(function(){
-			return this.execute(
-				"INSERT INTO sciz (room, jwt) VALUES ($1, $2)"
-				+ "ON CONFLICT (room) DO UPDATE SET jwt = $2;",
-				[ct.shoe.room.id, jwt],
-				"sciz / insert or update hook"
-			);
-		})
-		.finally(db.off);
+	return db.do(function(con){
+		return con.execute(
+			"INSERT INTO sciz (room, jwt) VALUES ($1, $2)"
+			+ "ON CONFLICT (room) DO UPDATE SET jwt = $2;",
+			[ct.shoe.room.id, jwt],
+			"sciz / insert or update hook"
+		);
+	});
 }
 
 function unregisterRoom(ct, p){
-	return db.on()
-		.then(function(){
-			return this.execute(
-				"DELETE FROM sciz WHERE room = $1;",
-				[ct.shoe.room.id],
-				"sciz / delete hook"
-			);
-		})
-		.finally(db.off);
+	return db.do(function(con){
+		return con.execute(
+			"DELETE FROM sciz WHERE room = $1;",
+			[ct.shoe.room.id],
+			"sciz / delete hook"
+		);
+	});
 }
 
 function requestSCIZ(ct, p, args){
 	/* N.B: args check done SCIZ side */
-	return db.on()
-		.then(function(){
-			return this.queryOptionalRow(
-				"SELECT jwt FROM sciz WHERE room = $1",
-				[ct.shoe.room.id],
-				"sciz / get hook"
-			);
-		})
-		.then(function(row){
-			if (!row || !row.jwt) {
-				ws.botMessage(p.bot, ct.shoe.room.id, 'Aucun hook SCIZ n\'est enregistré pour cette salle `!!help !!'
-					+ p.command + '`');
-				return;
-			}
-			var options = {
-				method: 'POST',
-				url: SCIZ_URL_REQUEST,
-				headers: {
-					'Authorization': row.jwt
-				},
-				json: {'req': args}
-			};
-			request(options, function(error, response, body){
-				if (body && !error && response.statusCode === 200 && body.message) {
-					var l = body.message.length
-					for (var i = 0; i < l; i++) {
-						var m = body.message[i];
-						if (i < l - 1) {
-							m += "\n-\n";
-						}
-						ws.botMessage(p.bot, ct.shoe.room.id, m);
+	return db.do(async function(con){
+		var row = await con.queryOptionalRow(
+			"SELECT jwt FROM sciz WHERE room = $1",
+			[ct.shoe.room.id],
+			"sciz / get hook"
+		);
+		if (!row || !row.jwt) {
+			ws.botMessage(p.bot, ct.shoe.room.id, 'Aucun hook SCIZ n\'est enregistré pour cette salle `!!help !!'
+				+ p.command + '`');
+			return;
+		}
+		var options = {
+			method: 'POST',
+			url: SCIZ_URL_REQUEST,
+			headers: {
+				'Authorization': row.jwt
+			},
+			json: {'req': args}
+		};
+		request(options, function(error, response, body){
+			if (body && !error && response.statusCode === 200 && body.message) {
+				var l = body.message.length
+				for (var i = 0; i < l; i++) {
+					var m = body.message[i];
+					if (i < l - 1) {
+						m += "\n-\n";
 					}
-				} else {
-					ws.botMessage(p.bot, ct.shoe.room.id,
-						'SCIZ est inaccessible ou le hook enregistré est invalide `!!help !!'
-						+ p.command + '`' + response + body + error);
+					ws.botMessage(p.bot, ct.shoe.room.id, m);
 				}
-			});
-		})
-		.finally(db.off);
+			} else {
+				ws.botMessage(p.bot, ct.shoe.room.id,
+					'SCIZ est inaccessible ou le hook enregistré est invalide `!!help !!'
+					+ p.command + '`' + response + body + error);
+			}
+		});
+	});
 }
 
